@@ -7,55 +7,37 @@ const HomeHeroSection: React.FC = () => {
     <section className="relative w-full min-h-screen flex items-center overflow-hidden bg-[#1a1a1a]">
       <div className="absolute inset-0 z-0">
         <img
-          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/5b7f31f3-d67f-460f-9127-903fa7eb9231-preview-themeforest-net/assets/images/1-1.gif"
+          src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=2400&q=80"
           alt="Cleaning professionals"
           className="w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-black/55 z-10" />
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_25%,rgba(0,168,89,0.22),transparent_38%)]" />
       </div>
 
-      <div className="relative z-20 max-w-[1240px] mx-auto px-4 xl:px-6 pt-[120px] pb-[100px] w-full">
-        <div className="max-w-[750px]">
-          <div className="inline-flex items-center gap-2 mb-7">
-            <span className="w-8 h-[2px] bg-[#00A859]" />
-            <span className="text-[#00A859] text-[15px] font-semibold uppercase tracking-widest">
-              Professional Cleaning
-            </span>
-          </div>
-
-          <h1 className="hero-title text-white mb-8 leading-[0.93]">
-            Clean <span className="text-[#00A859]">Space</span>
+      <div className="relative z-20 max-w-[1240px] mx-auto px-4 xl:px-6 pt-[160px] pb-[100px] w-full">
+        <div className="max-w-[900px]">
+          <h1 className="text-white text-[48px] sm:text-[60px] md:text-[80px] lg:text-[96px] font-extrabold leading-[1.05] tracking-[-0.02em] mb-6">
+            Your Trusted <span className="text-[#00A859]">Home</span>
             <br />
-            <span className="text-[#00A859]">Starts</span> Here
+            <span className="text-[#00A859]">Clean</span> Solutions
           </h1>
 
-          <p className="text-[18px] md:text-[20px] text-white/85 font-normal max-w-[480px] mb-12 leading-relaxed">
-            Professional cleaning services for offices, homes, and commercial spaces done right, every time.
+          <p className="text-[16px] sm:text-[18px] md:text-[20px] text-white/90 max-w-[750px] leading-relaxed mb-8">
+            We take pride in our attention to detail and commitment to customer satisfaction. Whether you require regular
+            maintenance or deep cleaning, our team ensures your home stays spotless.
           </p>
 
-          <div className="flex flex-wrap items-center gap-5">
-            <Link
-              to="/services"
-              className="btn-pill bg-[#00A859] hover:bg-[#008f4c] text-white font-bold text-[16px] flex items-center gap-3 group"
-            >
-              Our Services
-              <span className="flex items-center justify-center w-[28px] h-[28px] bg-white rounded-full transition-transform duration-300 group-hover:translate-x-1">
-                <ArrowRight className="w-4 h-4 text-[#00A859]" strokeWidth={3} />
-              </span>
-            </Link>
-            <Link
-              to="/contact"
-              className="btn-pill border-2 border-white/40 hover:border-white text-white font-bold text-[16px] hover:bg-white/10 transition-all duration-300"
-            >
-              Learn More
-            </Link>
-          </div>
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-4 bg-[#00A859] hover:bg-[#008f4c] text-white font-semibold text-[22px] sm:text-[24px] md:text-[26px] px-8 sm:px-10 py-4 sm:py-5 rounded-full transition-colors group shadow-lg"
+          >
+            Explore Services
+            <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white grid place-items-center">
+              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-[#00A859]" />
+            </span>
+          </Link>
         </div>
-      </div>
-
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-white/50">
-        <span className="text-[11px] font-semibold uppercase tracking-widest">Scroll Down</span>
-        <div className="w-[1px] h-10 bg-white/30 animate-pulse" />
       </div>
     </section>
   );

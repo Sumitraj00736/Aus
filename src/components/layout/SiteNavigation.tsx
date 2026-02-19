@@ -20,7 +20,7 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({ dark = false }) => {
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
-    <header className={`${dark ? 'relative bg-[#1a1a1a]' : 'absolute top-[54px] left-0 bg-transparent'} w-full z-50 animate-nav-enter`}>
+    <header className={`${dark ? 'relative bg-[#1a1a1a]' : 'absolute top-0 left-0 bg-transparent'} w-full z-50 animate-nav-enter`}>
       <div className="max-w-[1240px] mx-auto px-4 xl:px-6">
         <div className="flex items-center justify-between h-[100px]">
           <Link to="/" className="flex items-center flex-shrink-0" aria-label="Cetro Home">

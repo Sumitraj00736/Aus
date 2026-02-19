@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import HeaderTopBar from './HeaderTopBar';
 import SiteNavigation from './SiteNavigation';
+import SmoothScroll from './SmoothScroll';
 
 const SiteShell: React.FC = () => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const SiteShell: React.FC = () => {
     const targets = Array.from(document.querySelectorAll('section, footer, .animate-block'));
 
     targets.forEach((el, idx) => {
-      (el as HTMLElement).style.setProperty('--reveal-delay', `${Math.min(idx * 45, 260)}ms`);
+      (el as HTMLElement).style.setProperty('--reveal-delay', `${Math.min(idx * 45, 250)}ms`);
       el.setAttribute('data-animate', 'true');
     });
 
@@ -34,7 +35,8 @@ const SiteShell: React.FC = () => {
 
   return (
     <>
-      <HeaderTopBar />
+      <SmoothScroll scrollSpeed={2}/>
+      {!isHome && <HeaderTopBar />}
       <SiteNavigation dark={!isHome} />
       <Outlet />
     </>

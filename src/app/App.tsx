@@ -10,6 +10,9 @@ import ProjectsPage from '../pages/projects/ProjectsPage';
 import PagesPage from '../pages/page/PagesPage';
 import BlogPage from '../pages/blog/BlogPage';
 import ContactPage from '../pages/contact/ContactPage';
+import AdminLoginPage from '../pages/admin/AdminLoginPage';
+import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
+import AdminGuard from '../components/admin/AdminGuard';
 import { useEffect } from 'react';
 
 const RouteScrollReset: React.FC = () => {
@@ -36,6 +39,17 @@ const App: React.FC = () => {
           <Route path="blog" element={<BlogPage />} />
           <Route path="contact" element={<ContactPage />} />
         </Route>
+
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminGuard>
+              <AdminDashboardPage />
+            </AdminGuard>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <CookieConsent />

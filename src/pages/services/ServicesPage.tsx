@@ -1,24 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import JoinUsSection from '../../components/home/JoinUsSection';
 import Footer from '../../components/layout/Footer';
-import { services } from '../../data/services';
+import { apiRequest } from '../../lib/api';
+
+type ServiceItem = {
+  _id: string;
+  slug: string;
+  title: string;
+  shortDescription: string;
+  cardImage: string;
+};
 
 const ServicesPage: React.FC = () => {
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [page, setPage] = useState<any>(null);
+
+  useEffect(() => {
+    Promise.all([apiRequest<ServiceItem[]>('/public/services'), apiRequest('/public/pages/services')])
+      .then(([servicesData, pageData]) => {
+        setServices(servicesData);
+        setPage(pageData);
+      })
+      .catch(() => undefined);
+  }, []);
+
   return (
     <>
       <section className="relative min-h-[540px] pt-[210px] pb-[120px] overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1527515637462-cff94edd56f9?w=2200&q=80"
+          src={page?.bannerImage || 'https://images.unsplash.com/photo-1527515637462-cff94edd56f9?w=2200&q=80'}
           alt="Cleaning service hero"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/55" />
 
         <div className="relative z-20 page-container text-center text-white">
-          <h1 className="text-[42px] md:text-[64px] leading-[0.95] font-bold mb-4">Services Style 03</h1>
-          <p className="text-white/85 text-[15px] md:text-[16px] font-medium">Home &nbsp;›&nbsp; Services Style 03</p>
+          <h1 className="text-[42px] md:text-[64px] leading-[0.95] font-bold mb-4">{page?.title || 'Services Style 03'}</h1>
+          <p className="text-white/85 text-[15px] md:text-[16px] font-medium">{page?.subtitle || 'Home > Services Style 03'}</p>
         </div>
       </section>
 
@@ -34,12 +54,12 @@ const ServicesPage: React.FC = () => {
           </div>
 
           <div className="space-y-8 md:space-y-10">
-            {services.slice(0, 5).map((service, idx) => {
+            {services.slice(0, 6).map((service, idx) => {
               const reverse = idx % 2 === 1;
 
               return (
                 <article
-                  key={service.slug}
+                  key={service._id}
                   className={`relative grid grid-cols-1 lg:grid-cols-2 rounded-[28px] border border-[#dfe2e6] overflow-hidden bg-[#f7f7f7] ${
                     idx > 0 ? 'md:-mt-4' : ''
                   }`}

@@ -3,6 +3,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --theme-primary: #00A859;
+  --theme-dark: #1f2c3c;
+  --theme-light-bg: #f2f2ee;
+  --theme-text: #1a1a1a;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -12,7 +19,8 @@
     font-family: 'Poppins', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    @apply bg-white text-[#1a1a1a];
+    background: var(--theme-light-bg);
+    color: var(--theme-text);
   }
   .fade-up {
   opacity: 0;
@@ -21,6 +29,14 @@
 }
 .visible {
   @apply opacity-100 translate-y-0;
+}
+
+.theme-primary {
+  color: var(--theme-primary);
+}
+
+.theme-bg-primary {
+  background-color: var(--theme-primary);
 }
 
 .fade-up.visible {

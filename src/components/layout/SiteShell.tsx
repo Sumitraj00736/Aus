@@ -35,7 +35,7 @@ const SiteShell: React.FC = () => {
 
   return (
     <>
-      <SmoothScroll scrollSpeed={2}/>
+      {/* <SmoothScroll scrollSpeed={2}/> */}
       {!isHome && <HeaderTopBar />}
       <SiteNavigation dark={!isHome} />
       <Outlet />

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,7 +9,7 @@
   }
 
   body {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Poppins', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     @apply bg-white text-[#1a1a1a];
@@ -31,8 +31,8 @@
 
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Jost', sans-serif;
-    font-weight: 800;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.02em;
   }
@@ -55,6 +55,15 @@
     font-weight: 800;
     line-height: 0.95;
     letter-spacing: -0.04em;
+  }
+
+  .page-container {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(16px, 3vw, 28px);
+    padding-right: clamp(16px, 3vw, 28px);
   }
 
   .section-title {

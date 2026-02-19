@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import HeaderTopBar from './HeaderTopBar';
 import SiteNavigation from './SiteNavigation';
 import SmoothScroll from './SmoothScroll';
 
@@ -38,8 +37,7 @@ const SiteShell: React.FC = () => {
   return (
     <>
       {/* <SmoothScroll scrollSpeed={2}/> */}
-      {!isHome && <HeaderTopBar />}
-      <SiteNavigation dark={!useOverlayNav} topOffset={!isHome && useOverlayNav ? 54 : 0} />
+      <SiteNavigation dark={!useOverlayNav} />
       <Outlet />
     </>
   );

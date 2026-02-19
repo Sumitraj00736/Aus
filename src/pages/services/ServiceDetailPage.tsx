@@ -75,11 +75,11 @@ const ServiceDetailPage: React.FC = () => {
         />
         <div className="absolute inset-0 bg-black/58" />
 
-        <div className="relative z-20 max-w-[1240px] mx-auto px-4 xl:px-6 text-white text-center">
-          <h1 className="text-[50px] md:text-[74px] leading-[0.95] font-black mb-3">
+        <div className="relative z-20 page-container text-white text-center">
+          <h1 className="text-[38px] md:text-[56px] leading-[0.95] font-bold mb-3">
             {service.title}
           </h1>
-          <p className="text-white/90 text-[18px] font-semibold">
+          <p className="text-white/90 text-[15px] md:text-[16px] font-medium">
             Home &nbsp;›&nbsp; Services &nbsp;›&nbsp; {service.title}
           </p>
         </div>
@@ -87,12 +87,12 @@ const ServiceDetailPage: React.FC = () => {
 
       {/* Main Content */}
       <section className="py-20 bg-[#f2f2ee]">
-        <div className="max-w-[1360px] mx-auto px-4 xl:px-6 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12">
+        <div className="page-container max-w-[1280px] grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10">
           {/* Left Sidebar Sticky */}
           <aside className="space-y-4 sticky top-16 self-start">
             {/* Other Services */}
             <div className="rounded-xl border border-[#dce1e6] bg-white p-5 fade-up opacity-0 transform translate-y-4 transition-all duration-700">
-              <h3 className="text-[#1f2c3c] text-[28px] font-black leading-none mb-4">
+              <h3 className="text-[#1f2c3c] text-[24px] font-bold leading-none mb-4">
                 Other Services
               </h3>
               <ul>
@@ -102,7 +102,7 @@ const ServiceDetailPage: React.FC = () => {
                     <li key={item.slug}>
                       <Link
                         to={`/services/${item.slug}`}
-                        className={`block py-2 px-3 rounded-lg text-[14px] font-bold border-b border-[#e7eaee] transition-colors ${
+                        className={`block py-2 px-3 rounded-lg text-[14px] font-semibold border-b border-[#e7eaee] transition-colors ${
                           active
                             ? "bg-[#00A859] text-white border-transparent"
                             : "text-[#1f2c3c] hover:text-[#00A859]"
@@ -118,11 +118,11 @@ const ServiceDetailPage: React.FC = () => {
 
             {/* Help Box */}
             <div className="rounded-xl overflow-hidden bg-gradient-to-b from-[#122a1f] to-[#00A859] text-white p-6 fade-up opacity-0 transform translate-y-4 transition-all duration-700">
-              <h4 className="text-[24px] font-black mb-1">Do You Need Help?</h4>
-              <p className="text-[26px] font-black  mb-2">
+              <h4 className="text-[24px] font-bold mb-1">Do You Need Help?</h4>
+              <p className="text-[26px] font-bold mb-2">
                 +(084) 456-0789
               </p>
-              <p className="text-[20px] font-bold mb-3">support@example.com</p>
+              <p className="text-[20px] font-semibold mb-3">support@example.com</p>
               <img
                 src="https://images.unsplash.com/photo-1612537611736-c79ffebf3a1f?w=700&q=80"
                 alt="Helper"
@@ -139,13 +139,13 @@ const ServiceDetailPage: React.FC = () => {
               className="w-full h-[400px] object-fit rounded-xl fade-up opacity-0 transform translate-y-4 transition-all duration-700"
             />
 
-            <h2 className="text-[#1f2c3c] text-[48px] font-black leading-none fade-up opacity-0 transform translate-y-4 transition-all duration-700">
+            <h2 className="text-[#1f2c3c] text-[34px] md:text-[42px] font-bold leading-none fade-up opacity-0 transform translate-y-4 transition-all duration-700">
               About The Service
             </h2>
-            <p className="text-[#5e6975] text-[16px] leading-relaxed fade-up opacity-0 transform translate-y-4 transition-all duration-700">
+            <p className="text-[#5e6975] text-[15px] leading-relaxed fade-up opacity-0 transform translate-y-4 transition-all duration-700">
               {service.detailIntro}
             </p>
-            <p className="text-[#5e6975] text-[16px] leading-relaxed fade-up opacity-0 transform translate-y-4 transition-all duration-700">
+            <p className="text-[#5e6975] text-[15px] leading-relaxed fade-up opacity-0 transform translate-y-4 transition-all duration-700">
               {service.detailBody}
             </p>
 
@@ -205,7 +205,7 @@ const ServiceDetailPage: React.FC = () => {
                     <item.icon className="w-6 h-6 text-[#16302d]" />
                   </div>
                   <div>
-                    <h3 className="text-[#1f2c3c] text-[24px] font-black leading-none mb-1">
+                    <h3 className="text-[#1f2c3c] text-[24px] font-bold leading-none mb-1">
                       {item.title}
                     </h3>
                     <p className="text-[#5f6974] text-[14px] leading-relaxed">
@@ -217,7 +217,7 @@ const ServiceDetailPage: React.FC = () => {
             </div>
 
             {/* FAQs */}
-            <h2 className="text-[#1f2c3c] text-[48px] font-black leading-none fade-up opacity-0 transform translate-y-4 transition-all duration-700 mt-8 mb-4">
+            <h2 className="text-[#1f2c3c] text-[40px] md:text-[48px] font-bold leading-none fade-up opacity-0 transform translate-y-4 transition-all duration-700 mt-8 mb-4">
               Frequently Asked Questions
             </h2>
             <div className="space-y-3">
@@ -233,7 +233,7 @@ const ServiceDetailPage: React.FC = () => {
                       onClick={() => setOpenFaq(open ? -1 : idx)}
                       className="w-full text-left px-5 py-4 flex items-center justify-between"
                     >
-                      <span className="text-[#1f2c3c] text-[20px] font-bold leading-none">
+                      <span className="text-[#1f2c3c] text-[20px] font-semibold leading-none">
                         {faq.question}
                       </span>
                       {open ? (

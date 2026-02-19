@@ -7,6 +7,8 @@ import SmoothScroll from './SmoothScroll';
 const SiteShell: React.FC = () => {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isServicesArea = location.pathname.startsWith('/services');
+  const useOverlayNav = isHome || isServicesArea;
 
   useEffect(() => {
     const targets = Array.from(document.querySelectorAll('section, footer, .animate-block'));
@@ -37,7 +39,7 @@ const SiteShell: React.FC = () => {
     <>
       {/* <SmoothScroll scrollSpeed={2}/> */}
       {!isHome && <HeaderTopBar />}
-      <SiteNavigation dark={!isHome} />
+      <SiteNavigation dark={!useOverlayNav} topOffset={!isHome && useOverlayNav ? 54 : 0} />
       <Outlet />
     </>
   );

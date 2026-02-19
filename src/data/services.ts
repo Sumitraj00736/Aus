@@ -17,7 +17,7 @@ export const services: ServiceItem[] = [
       'We understand the importance of maintaining a clean and professional environment for your business.',
     heroImage: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=2000&q=80',
     cardImage: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=1200&q=80',
-    detailImage: 'https://t4.ftcdn.net/jpg/02/71/38/99/360_F_271389908_TeU2XysWbT1Lxlbum9IeLf9U4sH6Pz5j.jpg',
+    detailImage: 'https://s3.ap-southeast-1.amazonaws.com/static.honeykidsasia.com/wp-content/uploads/2024/10/Home-Clean-Home-part-time-helper-Singapore-900x643.png',
     detailIntro:
       'Construction cleanup requires precision, safety awareness, and a strong eye for detail. Our crews remove dust, debris, and residue from every corner so your property is ready to use immediately.',
     detailBody:

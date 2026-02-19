@@ -1,0 +1,44 @@
+import React, { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import HeaderTopBar from './HeaderTopBar';
+import SiteNavigation from './SiteNavigation';
+
+const SiteShell: React.FC = () => {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  useEffect(() => {
+    const targets = Array.from(document.querySelectorAll('section, footer, .animate-block'));
+
+    targets.forEach((el, idx) => {
+      (el as HTMLElement).style.setProperty('--reveal-delay', `${Math.min(idx * 45, 260)}ms`);
+      el.setAttribute('data-animate', 'true');
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    targets.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [location.pathname]);
+
+  return (
+    <>
+      <HeaderTopBar />
+      <SiteNavigation dark={!isHome} />
+      <Outlet />
+    </>
+  );
+};
+
+export default SiteShell;

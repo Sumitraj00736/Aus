@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
 
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN?.split(',') || ['http://localhost:3000'],
+    origin: process.env.CLIENT_ORIGIN?.split(',') || ['http://localhost:3000', 'https://austr.netlify.app'],
     credentials: true,
   })
 );

@@ -42,15 +42,18 @@ app.use('/api/submissions', submissionRoutes);
 app.use('/api/admin', adminRoutes);
 
 const port = Number(process.env.PORT || 4000);
-const mongoUri = process.env.MONGO_URI || 'mongodb+srv://sumitraj00736_db_user:sumitraj00736@cluster0.zqncxn5.mongodb.net/?appName=Cluster0';
+const mongoUri = process.env.MONGO_URI;
 
 const bootstrap = async () => {
+  if (!mongoUri) {
+    throw new Error('MONGO_URI is missing. Set it in environment variables before starting the server.');
+  }
   await connectDb(mongoUri);
   await ensureDefaults();
 
   server.listen(port, () => {
     // eslint-disable-next-line no-console
-    console.log(`API running on http://localhost:${port}`);
+    console.log(`API running on port ${port}`);
   });
 };
 

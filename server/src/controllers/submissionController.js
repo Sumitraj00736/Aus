@@ -1,7 +1,9 @@
 import Booking from '../models/Booking.js';
 import ContactSubmission from '../models/ContactSubmission.js';
 import Notification from '../models/Notification.js';
-import { emitNotification } from '../config/socket.js';
+import BlogPost from '../models/BlogPost.js';
+import BlogMessage from '../models/BlogMessage.js';
+import { emitAdminBlogMessage, emitNotification, emitPublicBlogMessage } from '../config/socket.js';
 
 const emitAndSaveNotification = async (type, title, message, payload) => {
   const notification = await Notification.create({ type, title, message, payload });
@@ -59,4 +61,74 @@ export const submitBooking = async (req, res) => {
   );
 
   res.status(201).json({ success: true, booking });
+};
+
+export const submitBlogMessage = async (req, res) => {
+  const {
+    blogSlug,
+    name,
+    email,
+    website = '',
+    message,
+    parentMessageId = null,
+  } = req.body;
+
+  if (!blogSlug || !name || !email || !message) {
+    return res.status(400).json({ message: 'blogSlug, name, email, and message are required.' });
+  }
+
+  const post = await BlogPost.findOne({ slug: blogSlug, isPublished: true }).lean();
+  if (!post) return res.status(404).json({ message: 'Blog post not found.' });
+
+  if (parentMessageId) {
+    const parent = await BlogMessage.findById(parentMessageId).lean();
+    if (!parent || String(parent.blogPostId) !== String(post._id)) {
+      return res.status(400).json({ message: 'Invalid parent message.' });
+    }
+  }
+
+  const created = await BlogMessage.create({
+    blogPostId: post._id,
+    parentMessageId,
+    name,
+    email,
+    website,
+    message,
+    isAdminReply: false,
+    status: 'approved',
+  });
+
+  const payload = {
+    _id: created._id,
+    blogPostId: created.blogPostId,
+    parentMessageId: created.parentMessageId,
+    name: created.name,
+    email: created.email,
+    website: created.website,
+    message: created.message,
+    isAdminReply: created.isAdminReply,
+    status: created.status,
+    createdAt: created.createdAt,
+    blogSlug,
+    blogTitle: post.title,
+  };
+
+  await emitAndSaveNotification(
+    'blog-message',
+    'New Blog Message',
+    `${name} left a message on "${post.title}"`,
+    {
+      blogSlug,
+      blogTitle: post.title,
+      messageId: created._id,
+      parentMessageId: created.parentMessageId,
+      name,
+      email,
+    }
+  );
+
+  emitAdminBlogMessage(payload);
+  emitPublicBlogMessage(blogSlug, payload);
+
+  res.status(201).json({ success: true, message: payload });
 };

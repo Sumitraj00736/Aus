@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Phone, ArrowRight, X, Menu } from 'lucide-react';
+import { Phone, ArrowRight, X, Menu } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 
 const navItems = [
@@ -18,7 +18,6 @@ type SiteNavigationProps = {
 
 const SiteNavigation: React.FC<SiteNavigationProps> = ({ dark = false, topOffset = 0 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const headerStyle = dark ? undefined : { top: `${topOffset}px` };
 
   return (
@@ -61,19 +60,11 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({ dark = false, topOffset
               </div>
             </div>
 
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="w-[50px] h-[50px] rounded-full bg-white/10 hover:bg-[#00A859] flex items-center justify-center transition-colors duration-300"
-              aria-label="Toggle search"
-            >
-              {searchOpen ? <X className="text-white w-5 h-5" /> : <Search className="text-white w-5 h-5" />}
-            </button>
-
             <Link
-              to="/contact"
+              to="/#request-quote"
               className="hidden sm:inline-flex items-center gap-2 bg-[#00A859] hover:bg-[#008f4c] text-white px-7 py-[14px] rounded-full font-bold text-[15px] transition-all duration-300 group"
             >
-              Get A Quote!
+              Request Quote
               <span className="bg-white/20 rounded-full p-[5px] group-hover:bg-white/40 transition-colors">
                 <ArrowRight className="w-4 h-4" />
               </span>
@@ -89,19 +80,6 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({ dark = false, topOffset
           </div>
         </div>
       </div>
-
-      {searchOpen && (
-        <div className="bg-white/10 backdrop-blur-sm border-t border-white/10">
-          <div className="max-w-[1240px] mx-auto px-6 py-4">
-            <input
-              type="text"
-              placeholder="Search anything..."
-              className="w-full bg-transparent text-white placeholder-white/60 text-lg outline-none border-b border-white/40 pb-2"
-              autoFocus
-            />
-          </div>
-        </div>
-      )}
 
       {mobileOpen && (
         <div className="xl:hidden bg-[#1a1a1a] border-t border-white/10">
@@ -120,8 +98,8 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({ dark = false, topOffset
                 {item.name}
               </NavLink>
             ))}
-            <Link to="/contact" className="mt-4 btn-pill bg-[#00A859] text-white text-center font-bold">
-              Get A Quote!
+            <Link to="/#request-quote" className="mt-4 btn-pill bg-[#00A859] text-white text-center font-bold">
+              Request Quote
             </Link>
           </nav>
         </div>

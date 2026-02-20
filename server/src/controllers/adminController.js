@@ -5,21 +5,55 @@ import BlogPost from '../models/BlogPost.js';
 import ContactSubmission from '../models/ContactSubmission.js';
 import Booking from '../models/Booking.js';
 import Notification from '../models/Notification.js';
+import BlogMessage from '../models/BlogMessage.js';
+import { emitAdminBlogMessage, emitPublicBlogMessage } from '../config/socket.js';
+import HowItWorksCard from '../models/HowItWorksCard.js';
+import FaqItem from '../models/FaqItem.js';
+import crypto from 'node:crypto';
+
+const slugify = (value = '') =>
+  String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const toArray = (value) => {
+  if (Array.isArray(value)) return value.map((entry) => String(entry).trim()).filter(Boolean);
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+  }
+  return [];
+};
 
 const asyncHandler = (fn) => async (req, res) => {
   try {
     await fn(req, res);
   } catch (error) {
+    if (error?.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0] || 'field';
+      return res.status(400).json({ message: `${field} already exists.` });
+    }
+    if (error?.name === 'ValidationError') {
+      const first = Object.values(error.errors || {})[0];
+      return res.status(400).json({ message: first?.message || 'Validation failed.' });
+    }
     res.status(500).json({ message: error.message || 'Server error' });
   }
 };
 
 export const getDashboardStats = asyncHandler(async (_req, res) => {
-  const [contacts, bookings, blogs, services, notifications, unreadNotifications] = await Promise.all([
+  const [contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, notifications, unreadNotifications] = await Promise.all([
     ContactSubmission.countDocuments(),
     Booking.countDocuments(),
     BlogPost.countDocuments(),
+    BlogMessage.countDocuments(),
     Service.countDocuments(),
+    HowItWorksCard.countDocuments(),
+    FaqItem.countDocuments(),
     Notification.countDocuments(),
     Notification.countDocuments({ isRead: false }),
   ]);
@@ -28,7 +62,7 @@ export const getDashboardStats = asyncHandler(async (_req, res) => {
   const latestBookings = await Booking.find().sort({ createdAt: -1 }).limit(5).lean();
 
   res.json({
-    totals: { contacts, bookings, blogs, services, notifications, unreadNotifications },
+    totals: { contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, notifications, unreadNotifications },
     latestContacts,
     latestBookings,
   });
@@ -103,12 +137,59 @@ export const listBlogsAdmin = asyncHandler(async (_req, res) => {
 });
 
 export const createBlog = asyncHandler(async (req, res) => {
-  const post = await BlogPost.create(req.body);
+  const title = (req.body?.title || '').trim();
+  if (!title) return res.status(400).json({ message: 'Blog title is required.' });
+
+  const requestedSlug = (req.body?.slug || '').trim();
+  const baseSlug = slugify(requestedSlug || title);
+  if (!baseSlug) return res.status(400).json({ message: 'Valid slug or title is required.' });
+
+  const exists = await BlogPost.exists({ slug: baseSlug });
+  if (exists) return res.status(400).json({ message: 'Slug already exists. Use a different slug.' });
+
+  const payload = {
+    ...req.body,
+    title,
+    slug: baseSlug,
+    tags: toArray(req.body?.tags),
+    popularTags: toArray(req.body?.popularTags),
+    galleryImages: toArray(req.body?.galleryImages),
+    readMinutes: Number(req.body?.readMinutes || 5),
+  };
+
+  const post = await BlogPost.create(payload);
   res.status(201).json(post);
 });
 
 export const updateBlog = asyncHandler(async (req, res) => {
-  const post = await BlogPost.findByIdAndUpdate(req.params.id, req.body, { new: true }).lean();
+  const title = req.body?.title ? String(req.body.title).trim() : undefined;
+  const requestedSlug = req.body?.slug ? String(req.body.slug).trim() : undefined;
+  const update = { ...req.body };
+
+  if (title !== undefined) {
+    if (!title) return res.status(400).json({ message: 'Blog title cannot be empty.' });
+    update.title = title;
+  }
+
+  if (requestedSlug !== undefined || title !== undefined) {
+    const nextSlug = slugify(requestedSlug || title || '');
+    if (!nextSlug) return res.status(400).json({ message: 'Valid slug is required.' });
+
+    const collision = await BlogPost.exists({
+      _id: { $ne: req.params.id },
+      slug: nextSlug,
+    });
+    if (collision) return res.status(400).json({ message: 'Slug already exists. Use a different slug.' });
+
+    update.slug = nextSlug;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(req.body, 'tags')) update.tags = toArray(req.body.tags);
+  if (Object.prototype.hasOwnProperty.call(req.body, 'popularTags')) update.popularTags = toArray(req.body.popularTags);
+  if (Object.prototype.hasOwnProperty.call(req.body, 'galleryImages')) update.galleryImages = toArray(req.body.galleryImages);
+  if (Object.prototype.hasOwnProperty.call(req.body, 'readMinutes')) update.readMinutes = Number(req.body.readMinutes || 5);
+
+  const post = await BlogPost.findByIdAndUpdate(req.params.id, update, { new: true }).lean();
   if (!post) return res.status(404).json({ message: 'Blog not found.' });
   res.json(post);
 });
@@ -127,4 +208,135 @@ export const listContactsAdmin = asyncHandler(async (_req, res) => {
 export const listBookingsAdmin = asyncHandler(async (_req, res) => {
   const bookings = await Booking.find().sort({ createdAt: -1 }).lean();
   res.json(bookings);
+});
+
+export const listHowItWorksAdmin = asyncHandler(async (_req, res) => {
+  const rows = await HowItWorksCard.find().sort({ sortOrder: 1, createdAt: 1 }).lean();
+  res.json(rows);
+});
+
+export const createHowItWorksAdmin = asyncHandler(async (req, res) => {
+  const row = await HowItWorksCard.create(req.body);
+  res.status(201).json(row);
+});
+
+export const updateHowItWorksAdmin = asyncHandler(async (req, res) => {
+  const row = await HowItWorksCard.findByIdAndUpdate(req.params.id, req.body, { new: true }).lean();
+  if (!row) return res.status(404).json({ message: 'How it works card not found.' });
+  res.json(row);
+});
+
+export const deleteHowItWorksAdmin = asyncHandler(async (req, res) => {
+  const row = await HowItWorksCard.findByIdAndDelete(req.params.id).lean();
+  if (!row) return res.status(404).json({ message: 'How it works card not found.' });
+  res.json({ success: true });
+});
+
+export const listFaqsAdmin = asyncHandler(async (req, res) => {
+  const pageKey = req.query.pageKey ? String(req.query.pageKey) : undefined;
+  const query = pageKey ? { pageKey } : {};
+  const rows = await FaqItem.find(query).sort({ sortOrder: 1, createdAt: 1 }).lean();
+  res.json(rows);
+});
+
+export const createFaqAdmin = asyncHandler(async (req, res) => {
+  const row = await FaqItem.create(req.body);
+  res.status(201).json(row);
+});
+
+export const updateFaqAdmin = asyncHandler(async (req, res) => {
+  const row = await FaqItem.findByIdAndUpdate(req.params.id, req.body, { new: true }).lean();
+  if (!row) return res.status(404).json({ message: 'FAQ not found.' });
+  res.json(row);
+});
+
+export const deleteFaqAdmin = asyncHandler(async (req, res) => {
+  const row = await FaqItem.findByIdAndDelete(req.params.id).lean();
+  if (!row) return res.status(404).json({ message: 'FAQ not found.' });
+  res.json({ success: true });
+});
+
+export const getCloudinarySignature = asyncHandler(async (_req, res) => {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || '';
+  const apiKey = process.env.CLOUDINARY_API_KEY || '';
+  const apiSecret = process.env.CLOUDINARY_API_SECRET || '';
+  if (!cloudName || !apiKey || !apiSecret) {
+    return res.status(400).json({ message: 'Cloudinary env vars are missing.' });
+  }
+
+  const timestamp = Math.floor(Date.now() / 1000);
+  const folder = process.env.CLOUDINARY_FOLDER || 'cetro';
+  const toSign = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;
+  const signature = crypto.createHash('sha1').update(toSign).digest('hex');
+
+  res.json({
+    cloudName,
+    apiKey,
+    timestamp,
+    folder,
+    signature,
+  });
+});
+
+export const listBlogMessagesAdmin = asyncHandler(async (_req, res) => {
+  const rows = await BlogMessage.find()
+    .sort({ createdAt: -1 })
+    .populate('blogPostId', 'title slug')
+    .lean();
+  res.json(rows);
+});
+
+export const updateBlogMessageAdmin = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+  const update = {};
+  if (status) update.status = status;
+
+  const row = await BlogMessage.findByIdAndUpdate(req.params.id, update, { new: true })
+    .populate('blogPostId', 'title slug')
+    .lean();
+  if (!row) return res.status(404).json({ message: 'Blog message not found.' });
+
+  emitAdminBlogMessage({ type: 'blog-message-updated', message: row });
+  if (row.blogPostId?.slug) emitPublicBlogMessage(row.blogPostId.slug, { type: 'blog-message-updated', message: row });
+
+  res.json(row);
+});
+
+export const replyBlogMessageAdmin = asyncHandler(async (req, res) => {
+  const { message } = req.body;
+  if (!message) return res.status(400).json({ message: 'Reply message is required.' });
+
+  const parent = await BlogMessage.findById(req.params.id).populate('blogPostId', 'title slug').lean();
+  if (!parent) return res.status(404).json({ message: 'Parent blog message not found.' });
+
+  const reply = await BlogMessage.create({
+    blogPostId: parent.blogPostId._id,
+    parentMessageId: parent._id,
+    name: 'Admin',
+    email: 'admin@cetro.com',
+    website: '',
+    message,
+    isAdminReply: true,
+    status: 'approved',
+  });
+
+  const payload = {
+    _id: reply._id,
+    blogPostId: reply.blogPostId,
+    parentMessageId: reply.parentMessageId,
+    name: reply.name,
+    email: reply.email,
+    website: reply.website,
+    message: reply.message,
+    isAdminReply: reply.isAdminReply,
+    status: reply.status,
+    createdAt: reply.createdAt,
+    blogSlug: parent.blogPostId.slug,
+    blogTitle: parent.blogPostId.title,
+  };
+
+  emitAdminBlogMessage({ type: 'blog-message-reply', message: payload });
+  emitPublicBlogMessage(parent.blogPostId.slug, { type: 'blog-message-reply', message: payload });
+
+  res.status(201).json(payload);
 });

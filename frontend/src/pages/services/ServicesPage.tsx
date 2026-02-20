@@ -54,36 +54,25 @@ const ServicesPage: React.FC = () => {
           </div>
 
           <div className="space-y-8 md:space-y-10">
-            {services.slice(0, 6).map((service, idx) => {
-              const reverse = idx % 2 === 1;
-
-              return (
-                <article
-                  key={service._id}
-                  className={`relative grid grid-cols-1 lg:grid-cols-2 rounded-[28px] border border-[#dfe2e6] overflow-hidden bg-[#f7f7f7] ${
-                    idx > 0 ? 'md:-mt-4' : ''
-                  }`}
-                >
-                  <div className={reverse ? 'order-2' : 'order-1'}>
-                    <img src={service.cardImage} alt={service.title} className="w-full h-[320px] md:h-[380px] object-cover" />
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+              {services.slice(0, 9).map((service) => (
+                <article key={service._id} className="relative rounded-[32px] overflow-hidden border border-[#dfe2e6] bg-white">
+                  <img src={service.cardImage} alt={service.title} className="w-full h-[520px] object-cover" />
+                  <div className="absolute inset-x-4 bottom-4 rounded-[26px] bg-[linear-gradient(135deg,rgba(58,58,58,0.88),rgba(11,111,58,0.72),rgba(37,49,66,0.88))] p-6 text-white border border-white/10">
+                    <h3 className="text-[42px] leading-none font-bold mb-4">{service.title}</h3>
+                    <div className="h-px bg-white/30 mb-4" />
+                    <p className="text-[16px] leading-relaxed text-white/95 min-h-[92px]">{service.shortDescription}</p>
                   </div>
-
-                  <div className={`p-8 md:p-12 flex flex-col justify-center ${reverse ? 'order-1' : 'order-2'}`}>
-                    <h3 className="text-[#1f2c3c] text-[34px] md:text-[48px] leading-[0.95] font-bold mb-4">{service.title}</h3>
-                    <div className="h-px bg-[#d9dde2] mb-6" />
-                    <p className="text-[#646f7b] text-[16px] md:text-[18px] leading-relaxed max-w-[95%]">{service.shortDescription}</p>
-                  </div>
-
                   <Link
                     to={`/services/${service.slug}`}
                     aria-label={`Read more about ${service.title}`}
-                    className={`absolute bottom-5 ${reverse ? 'left-5' : 'right-5'} w-14 h-14 rounded-full border border-[#dfe2e6] bg-white hover:bg-[#00A859] hover:text-white text-[#1f2c3c] grid place-items-center transition-colors`}
+                    className="absolute bottom-2 right-2 w-16 h-16 rounded-full bg-[#00A859] hover:bg-[#00914d] text-white grid place-items-center border-[6px] border-[#f2f2ee] transition-colors"
                   >
                     <ArrowRight className="w-6 h-6" />
                   </Link>
                 </article>
-              );
-            })}
+              ))}
+            </div>
           </div>
         </div>
       </section>

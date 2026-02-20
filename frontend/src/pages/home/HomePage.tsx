@@ -4,6 +4,7 @@ import HomeHeroSection from '../../components/home/HomeHeroSection';
 import WhyChooseUsSection from '../../components/home/WhyChooseUsSection';
 import OurProjectsSection from '../../components/home/OurProjectsSection';
 import HowItWorksSection from '../../components/home/HowItWorksSection';
+import BookServiceSection from '../../components/home/BookServiceSection';
 import PricingSection from '../../components/home/PricingSection';
 import WhatClientsSaySection from '../../components/home/WhatClientsSaySection';
 import FaqSection from '../../components/home/FaqSection';
@@ -17,6 +18,7 @@ const HomePage: React.FC = () => {
       <WhyChooseUsSection />
       <OurProjectsSection />
       <HowItWorksSection />
+      <BookServiceSection />
       <PricingSection />
       <WhatClientsSaySection />
       <FaqSection />

@@ -42,7 +42,7 @@ app.use('/api/submissions', submissionRoutes);
 app.use('/api/admin', adminRoutes);
 
 const port = Number(process.env.PORT || 4000);
-const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/cetro_cms';
+const mongoUri = process.env.MONGO_URI || 'mongodb+srv://sumitraj00736_db_user:sumitraj00736@cluster0.zqncxn5.mongodb.net/?appName=Cluster0';
 
 const bootstrap = async () => {
   await connectDb(mongoUri);

@@ -41,7 +41,7 @@ const FromBlogSection: React.FC = () => {
 
               <h3 className="text-[#1f2c3c] text-[18px] md:text-[20px] leading-tight font-black mb-6">{post.title}</h3>
 
-              <Link to="/blog" className="inline-flex items-center gap-2 text-[#1f2c3c] font-bold text-[18px] hover:text-[#00A859] transition-colors">
+              <Link to={`/blog/${post.slug}`} className="inline-flex items-center gap-2 text-[#1f2c3c] font-bold text-[18px] hover:text-[#00A859] transition-colors">
                 Read More
                 <ArrowRight className="w-5 h-5" />
               </Link>

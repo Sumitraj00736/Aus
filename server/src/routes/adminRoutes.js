@@ -18,6 +18,18 @@ import {
   deleteBlog,
   listContactsAdmin,
   listBookingsAdmin,
+  listBlogMessagesAdmin,
+  updateBlogMessageAdmin,
+  replyBlogMessageAdmin,
+  listHowItWorksAdmin,
+  createHowItWorksAdmin,
+  updateHowItWorksAdmin,
+  deleteHowItWorksAdmin,
+  listFaqsAdmin,
+  createFaqAdmin,
+  updateFaqAdmin,
+  deleteFaqAdmin,
+  getCloudinarySignature,
 } from '../controllers/adminController.js';
 
 const router = Router();
@@ -46,5 +58,17 @@ router.delete('/blogs/:id', deleteBlog);
 
 router.get('/contacts', listContactsAdmin);
 router.get('/bookings', listBookingsAdmin);
+router.get('/blog-messages', listBlogMessagesAdmin);
+router.patch('/blog-messages/:id', updateBlogMessageAdmin);
+router.post('/blog-messages/:id/reply', replyBlogMessageAdmin);
+router.get('/how-it-works', listHowItWorksAdmin);
+router.post('/how-it-works', createHowItWorksAdmin);
+router.put('/how-it-works/:id', updateHowItWorksAdmin);
+router.delete('/how-it-works/:id', deleteHowItWorksAdmin);
+router.get('/faqs', listFaqsAdmin);
+router.post('/faqs', createFaqAdmin);
+router.put('/faqs/:id', updateFaqAdmin);
+router.delete('/faqs/:id', deleteFaqAdmin);
+router.get('/uploads/cloudinary-signature', getCloudinarySignature);
 
 export default router;

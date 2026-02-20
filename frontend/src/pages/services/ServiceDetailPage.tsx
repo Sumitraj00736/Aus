@@ -11,6 +11,7 @@ const ServiceDetailPage: React.FC = () => {
   const [services, setServices] = useState<any[]>([]);
   const [openFaq, setOpenFaq] = useState(0);
   const [notFound, setNotFound] = useState(false);
+  const [globalFaqs, setGlobalFaqs] = useState<any[]>([]);
 
   useEffect(() => {
     Promise.all([apiRequest('/public/services'), apiRequest(`/public/services/${slug}`)])
@@ -19,13 +20,17 @@ const ServiceDetailPage: React.FC = () => {
         setService(current);
       })
       .catch(() => setNotFound(true));
+
+    apiRequest<any[]>('/public/faqs?pageKey=service')
+      .then((rows) => setGlobalFaqs(rows))
+      .catch(() => undefined);
   }, [slug]);
 
   if (notFound) return <Navigate to="/services" replace />;
   if (!service) return <div className="min-h-[50vh] bg-[#f2f2ee] page-container py-20">Loading...</div>;
 
-  const faqs = service.faqs?.length
-    ? service.faqs
+  const faqs = service.faqs?.length ? service.faqs : globalFaqs?.length
+    ? globalFaqs
     : [
         { question: 'What types of spaces do you clean?', answer: 'Homes, offices, and post-renovation sites.' },
         { question: 'Are your cleaning products eco-friendly?', answer: 'Yes, we use safe and non-toxic products.' },
@@ -66,24 +71,48 @@ const ServiceDetailPage: React.FC = () => {
                 })}
               </ul>
             </div>
+            <div className="rounded-[24px] bg-[linear-gradient(180deg,#102014,#0baa53)] p-6 text-white overflow-hidden">
+              <p className="text-[30px] font-semibold mb-4">{service.helpCard?.title || 'Do You Need Help?'}</p>
+              <p className="text-[42px] leading-none font-bold mb-3">{service.helpCard?.phone || '+(084) 456-0789'}</p>
+              <p className="text-[28px] font-semibold mb-4">{service.helpCard?.email || 'support@example.com'}</p>
+              {service.helpCard?.image ? (
+                <img src={service.helpCard.image} alt="Help card" className="w-full h-[260px] object-contain object-bottom" />
+              ) : null}
+            </div>
           </aside>
 
           <div className="flex flex-col gap-8">
             <img src={service.detailImage} alt={service.title} className="w-full h-[400px] object-cover rounded-xl" />
 
-            <h2 className="text-[#1f2c3c] text-[34px] md:text-[42px] font-bold leading-none">About The Service</h2>
-            <p className="text-[#5e6975] text-[15px] leading-relaxed">{service.detailIntro}</p>
+            <h2 className="text-[#1f2c3c] text-[34px] md:text-[42px] font-bold leading-none">{service.aboutSectionTitle || 'About The Service'}</h2>
+            <p className="text-[#5e6975] text-[15px] leading-relaxed">{service.aboutSectionDescription || service.detailIntro}</p>
             <p className="text-[#5e6975] text-[15px] leading-relaxed">{service.detailBody}</p>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {(service.aboutImages?.length ? service.aboutImages : [service.detailImage]).slice(0, 4).map((img: string, idx: number) => (
+                <img key={`${img}-${idx}`} src={img} alt={`${service.title} about ${idx + 1}`} className="w-full h-[220px] object-cover rounded-[18px]" />
+              ))}
+            </div>
+
             <h2 className="text-[#1f2c3c] text-[40px] md:text-[48px] font-bold leading-none mt-4 mb-1">Why Choose Us?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 mb-2">
-              {(service.checklist?.length ? service.checklist : ['Assess Needs', 'Dust Surfaces', 'Vacuum Carpets', 'Mop Floors']).map((item: string) => (
-                <p key={item} className="inline-flex items-center gap-3 text-[#1f2c3c] text-[17px] font-semibold">
-                  <span className="w-5 h-5 rounded-full bg-[#00A859] text-white grid place-items-center">
-                    <Check className="w-3 h-3" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+              {(service.aboutBullets?.length
+                ? service.aboutBullets
+                : [
+                    { title: 'Deep Cleaning Solutions', description: 'Choose a time that works for you, whether you need weekly upkeep or one-time deep clean.' },
+                    { title: 'Comprehensive Cleaning', description: 'We use safe, non-toxic products that protect your family, pets, and the environment.' },
+                    { title: 'Eco-Friendly Products', description: 'Certified products that protect your home and improve indoor air quality.' },
+                    { title: 'Flexible Scheduling', description: 'Book one-time sessions or recurring plans based on your lifestyle.' },
+                  ]).map((item: any) => (
+                <div key={item.title} className="grid grid-cols-[56px_1fr] items-start gap-4">
+                  <span className="w-14 h-14 rounded-full bg-[#86ef72] grid place-items-center overflow-hidden">
+                    {item.iconImage ? <img src={item.iconImage} alt={item.title} className="w-8 h-8 object-contain" /> : <Check className="w-7 h-7 text-[#16302d]" />}
                   </span>
-                  {item}
-                </p>
+                  <div>
+                    <p className="text-[#1f2c3c] text-[26px] font-bold leading-none mb-1">{item.title}</p>
+                    <p className="text-[#5e6975] text-[15px] leading-relaxed">{item.description}</p>
+                  </div>
+                </div>
               ))}
             </div>
 

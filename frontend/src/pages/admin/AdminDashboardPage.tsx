@@ -2,8 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { Bell, ChevronLeft, ChevronRight, LayoutDashboard, Menu, X } from 'lucide-react';
 import { API_BASE, apiRequest } from '../../lib/api';
+import { notifyError, notifySuccess } from '../../lib/toast';
 
-type TabKey = 'overview' | 'settings' | 'pages' | 'services' | 'blogs' | 'howItWorks' | 'faqs' | 'blogMessages' | 'contacts' | 'bookings' | 'notifications';
+type TabKey = 'overview' | 'settings' | 'pages' | 'services' | 'blogs' | 'howItWorks' | 'faqs' | 'blogMessages' | 'contacts' | 'bookings' | 'notifications' | 'admins' | 'activity';
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'overview', label: 'Overview' },
@@ -17,6 +18,8 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: 'contacts', label: 'Contacts' },
   { key: 'bookings', label: 'Bookings' },
   { key: 'notifications', label: 'Notifications' },
+  { key: 'admins', label: 'Sub Admins' },
+  { key: 'activity', label: 'Activity Logs' },
 ];
 
 type ToastItem = {
@@ -38,6 +41,8 @@ const AdminDashboardPage: React.FC = () => {
   const [contacts, setContacts] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [adminUsers, setAdminUsers] = useState<any[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [selectedPageKey, setSelectedPageKey] = useState('home');
   const [saving, setSaving] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -87,19 +92,7 @@ const AdminDashboardPage: React.FC = () => {
   };
 
   const fetchAll = async () => {
-    const [
-      statsData,
-      settingsData,
-      pagesData,
-      servicesData,
-      blogsData,
-      howItWorksData,
-      faqsData,
-      blogMessagesData,
-      contactsData,
-      bookingsData,
-      notificationsData,
-    ] = await Promise.all([
+    const base = await Promise.all([
       apiRequest('/admin/stats'),
       apiRequest('/admin/settings'),
       apiRequest('/admin/pages'),
@@ -113,6 +106,25 @@ const AdminDashboardPage: React.FC = () => {
       apiRequest('/admin/notifications'),
     ]);
 
+    const [
+      statsData,
+      settingsData,
+      pagesData,
+      servicesData,
+      blogsData,
+      howItWorksData,
+      faqsData,
+      blogMessagesData,
+      contactsData,
+      bookingsData,
+      notificationsData,
+    ] = base;
+
+    const [adminsData, logsData] = await Promise.all([
+      apiRequest('/admin/admins').catch(() => []),
+      apiRequest('/admin/audit-logs').catch(() => []),
+    ]);
+
     setStats(statsData);
     setSettings(settingsData);
     setPages(pagesData);
@@ -124,6 +136,8 @@ const AdminDashboardPage: React.FC = () => {
     setContacts(contactsData);
     setBookings(bookingsData);
     setNotifications(notificationsData);
+    setAdminUsers(adminsData);
+    setAuditLogs(logsData);
   };
 
   useEffect(() => {
@@ -192,7 +206,8 @@ const AdminDashboardPage: React.FC = () => {
         body: JSON.stringify(settings),
       });
       setSettings(updated);
-      alert('Settings saved.');
+      notifySuccess('Settings saved.');
+      setTimeout(() => window.location.reload(), 300);
     } finally {
       setSaving(false);
     }
@@ -207,7 +222,7 @@ const AdminDashboardPage: React.FC = () => {
         body: JSON.stringify(selectedPage),
       });
       setPages((prev) => prev.map((page) => (page.pageKey === updated.pageKey ? updated : page)));
-      alert('Page content saved.');
+      notifySuccess('Page content saved.');
     } finally {
       setSaving(false);
     }
@@ -392,6 +407,11 @@ const AdminDashboardPage: React.FC = () => {
                 <input value={settings.siteName || ''} onChange={(e) => setSettings({ ...settings, siteName: e.target.value })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Site name" />
                 <input value={settings.contact?.phone || ''} onChange={(e) => setSettings({ ...settings, contact: { ...settings.contact, phone: e.target.value } })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Phone" />
                 <input value={settings.contact?.email || ''} onChange={(e) => setSettings({ ...settings, contact: { ...settings.contact, email: e.target.value } })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Email" />
+                <input value={settings.contact?.supportEmail || ''} onChange={(e) => setSettings({ ...settings, contact: { ...settings.contact, supportEmail: e.target.value } })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Support email" />
+                <input value={settings.contact?.address || ''} onChange={(e) => setSettings({ ...settings, contact: { ...settings.contact, address: e.target.value } })} className="h-11 rounded border border-[#d8dde3] px-3 md:col-span-2" placeholder="Address" />
+                <input value={settings.workingTime?.weekdays || ''} onChange={(e) => setSettings({ ...settings, workingTime: { ...settings.workingTime, weekdays: e.target.value } })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Weekdays timing" />
+                <input value={settings.workingTime?.saturday || ''} onChange={(e) => setSettings({ ...settings, workingTime: { ...settings.workingTime, saturday: e.target.value } })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Saturday timing" />
+                <input value={settings.workingTime?.sunday || ''} onChange={(e) => setSettings({ ...settings, workingTime: { ...settings.workingTime, sunday: e.target.value } })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Sunday timing" />
                 <input value={settings.theme?.primary || ''} onChange={(e) => setSettings({ ...settings, theme: { ...settings.theme, primary: e.target.value } })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Primary color hex" />
               </div>
               <button disabled={saving} onClick={updateSettings} className="px-5 py-2 rounded bg-[#00A859] text-white text-[14px]">{saving ? 'Saving...' : 'Save Settings'}</button>
@@ -591,6 +611,17 @@ const AdminDashboardPage: React.FC = () => {
               onOpen={(row) => setSelectedNotification(row)}
             />
           ) : null}
+          {activeTab === 'admins' ? (
+            <AdminUsersPanel
+              users={adminUsers}
+              onCreate={async (payload) => {
+                await apiRequest('/admin/admins', { method: 'POST', body: JSON.stringify(payload) });
+                notifySuccess('Sub admin created.');
+                fetchAll().catch(() => undefined);
+              }}
+            />
+          ) : null}
+          {activeTab === 'activity' ? <AuditLogPanel rows={auditLogs} /> : null}
           </div>
         </main>
       </div>
@@ -736,7 +767,7 @@ const CrudList: React.FC<{
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => uploadImage(field, e.target.files?.[0]).catch((err) => alert(err.message))}
+                  onChange={(e) => uploadImage(field, e.target.files?.[0]).catch((err) => notifyError(err.message))}
                   className="text-[12px]"
                 />
               ) : null}
@@ -781,7 +812,7 @@ const CrudList: React.FC<{
                 typeof current?.readMinutes === 'string' && current.readMinutes !== ''
                   ? Number(current.readMinutes)
                   : current?.readMinutes,
-            }).catch((err) => alert(err.message))
+            }).catch((err) => notifyError(err.message))
           }
           className="px-5 py-2 rounded bg-[#00A859] text-white text-[14px]"
         >
@@ -789,7 +820,7 @@ const CrudList: React.FC<{
         </button>
         {onDelete && selectedId !== 'new' ? (
           <button
-            onClick={() => onDelete(selectedId).catch((err) => alert(err.message))}
+            onClick={() => onDelete(selectedId).catch((err) => notifyError(err.message))}
             className="px-5 py-2 rounded bg-[#d64343] text-white text-[14px]"
           >
             Delete
@@ -857,9 +888,9 @@ const BlogMessagesPanel: React.FC<{ messages: any[]; onRefresh: () => Promise<vo
                   placeholder="Write admin reply"
                 />
                 <div className="flex gap-2">
-                  <button onClick={() => submitReply(row._id).catch((err) => alert(err.message))} className="px-3 py-2 rounded bg-[#00A859] text-white text-[13px]">Reply</button>
-                  <button onClick={() => updateStatus(row._id, 'approved').catch((err) => alert(err.message))} className="px-3 py-2 rounded bg-[#e7f7ef] text-[#009450] text-[13px]">Approve</button>
-                  <button onClick={() => updateStatus(row._id, 'spam').catch((err) => alert(err.message))} className="px-3 py-2 rounded bg-[#fff1f1] text-[#c53030] text-[13px]">Spam</button>
+                  <button onClick={() => submitReply(row._id).catch((err) => notifyError(err.message))} className="px-3 py-2 rounded bg-[#00A859] text-white text-[13px]">Reply</button>
+                  <button onClick={() => updateStatus(row._id, 'approved').catch((err) => notifyError(err.message))} className="px-3 py-2 rounded bg-[#e7f7ef] text-[#009450] text-[13px]">Approve</button>
+                  <button onClick={() => updateStatus(row._id, 'spam').catch((err) => notifyError(err.message))} className="px-3 py-2 rounded bg-[#fff1f1] text-[#c53030] text-[13px]">Spam</button>
                 </div>
               </div>
             ) : null}
@@ -998,6 +1029,69 @@ const Detail: React.FC<{ label: string; value: string; full?: boolean }> = ({ la
   <div className={`${full ? 'md:col-span-2' : ''} rounded-lg border border-[#e7edf3] bg-[#f8fafc] p-3`}>
     <p className="text-[12px] text-[#607080] mb-1">{label}</p>
     <p className="text-[14px] text-[#1f2c3c] break-words">{value}</p>
+  </div>
+);
+
+const AdminUsersPanel: React.FC<{
+  users: any[];
+  onCreate: (payload: any) => Promise<void>;
+}> = ({ users, onCreate }) => {
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-[22px] font-semibold text-[#1f2c3c]">Sub Admin Management</h2>
+      <div className="rounded-xl border border-[#dce1e6] p-4">
+        <p className="text-[14px] text-[#5f6f7d] mb-3">Create new sub admin</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Name" />
+          <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Email" />
+          <input value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="h-11 rounded border border-[#d8dde3] px-3" placeholder="Password" />
+        </div>
+        <button
+          onClick={() =>
+            onCreate(form)
+              .then(() => setForm({ name: '', email: '', password: '' }))
+              .catch((err) => notifyError(err.message))
+          }
+          className="mt-3 px-5 py-2 rounded bg-[#00A859] text-white text-[14px]"
+        >
+          Create Sub Admin
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {users.map((user) => (
+          <article key={user._id} className="rounded-xl border border-[#dce1e6] bg-white p-4">
+            <p className="text-[16px] font-semibold text-[#1f2c3c]">{user.name}</p>
+            <p className="text-[13px] text-[#667481]">{user.email}</p>
+            <p className="text-[12px] uppercase mt-2 text-[#00A859]">{user.role}</p>
+            <p className="text-[12px] text-[#8b97a2] mt-1">{new Date(user.createdAt).toLocaleString()}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const AuditLogPanel: React.FC<{ rows: any[] }> = ({ rows }) => (
+  <div>
+    <h2 className="text-[22px] font-semibold text-[#1f2c3c] mb-4">Admin Activity Logs</h2>
+    <div className="space-y-3">
+      {rows.map((row) => (
+        <article key={row._id} className="rounded-xl border border-[#dce1e6] bg-white p-4">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <p className="text-[14px] font-semibold text-[#1f2c3c]">{row.adminName} ({row.adminRole})</p>
+            <p className="text-[12px] text-[#8b97a2]">{row.createdAt ? new Date(row.createdAt).toLocaleString() : '-'}</p>
+          </div>
+          <p className="text-[13px] text-[#00A859] uppercase tracking-wider mb-1">{row.action} {row.entity}</p>
+          <p className="text-[13px] text-[#667481] break-all">{row.adminEmail}</p>
+          <pre className="mt-2 text-[12px] text-[#445465] whitespace-pre-wrap break-all bg-[#f7fafc] border border-[#e7edf3] rounded p-2">
+            {JSON.stringify(row.details || {}, null, 2)}
+          </pre>
+        </article>
+      ))}
+    </div>
   </div>
 );
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requireMainAdmin } from '../middleware/auth.js';
 import {
   getDashboardStats,
   getNotifications,
@@ -30,6 +30,9 @@ import {
   updateFaqAdmin,
   deleteFaqAdmin,
   getCloudinarySignature,
+  listAdminUsers,
+  createSubAdmin,
+  listAuditLogs,
 } from '../controllers/adminController.js';
 
 const router = Router();
@@ -70,5 +73,8 @@ router.post('/faqs', createFaqAdmin);
 router.put('/faqs/:id', updateFaqAdmin);
 router.delete('/faqs/:id', deleteFaqAdmin);
 router.get('/uploads/cloudinary-signature', getCloudinarySignature);
+router.get('/admins', requireMainAdmin, listAdminUsers);
+router.post('/admins', requireMainAdmin, createSubAdmin);
+router.get('/audit-logs', requireMainAdmin, listAuditLogs);
 
 export default router;

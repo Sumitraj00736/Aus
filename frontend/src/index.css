@@ -39,9 +39,56 @@
   background-color: var(--theme-primary);
 }
 
+.theme-border-primary {
+  border-color: var(--theme-primary);
+}
+
+.hover-theme-primary:hover {
+  color: var(--theme-primary);
+}
+
+.hover-theme-bg-primary:hover {
+  background-color: var(--theme-primary);
+}
+
+.hover-theme-bg-primary-dark:hover {
+  background-color: color-mix(in srgb, var(--theme-primary) 82%, black);
+}
+
+.group:hover .group-hover-theme-primary {
+  color: var(--theme-primary);
+}
+
+.group:hover .group-hover-theme-bg-primary {
+  background-color: var(--theme-primary);
+}
+
 .fade-up.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+[class*="text-[#00A859]"] {
+  color: var(--theme-primary) !important;
+}
+
+[class*="bg-[#00A859]"] {
+  background-color: var(--theme-primary) !important;
+}
+
+[class*="border-[#00A859]"] {
+  border-color: var(--theme-primary) !important;
+}
+
+[class*="hover:bg-[#00A859]"]:hover,
+[class*="hover:bg-[#008f4c]"]:hover,
+[class*="hover:bg-[#00914d]"]:hover,
+[class*="hover:bg-[#009551]"]:hover {
+  background-color: color-mix(in srgb, var(--theme-primary) 82%, black) !important;
+}
+
+[class*="hover:text-[#00A859]"]:hover {
+  color: var(--theme-primary) !important;
 }
 
 

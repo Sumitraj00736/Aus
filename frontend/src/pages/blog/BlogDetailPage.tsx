@@ -5,6 +5,7 @@ import { io } from 'socket.io-client';
 import Footer from '../../components/layout/Footer';
 import JoinUsSection from '../../components/home/JoinUsSection';
 import { API_BASE, apiRequest } from '../../lib/api';
+import { notifyError, notifySuccess } from '../../lib/toast';
 
 const BlogDetailPage: React.FC = () => {
   const { slug = '' } = useParams();
@@ -100,9 +101,9 @@ const BlogDetailPage: React.FC = () => {
         }),
       });
       setForm({ name: '', email: '', website: '', message: '', saveInfo: form.saveInfo });
-      alert('Your message has been posted.');
+      notifySuccess('Your message has been posted.');
     } catch (error: any) {
-      alert(error.message || 'Failed to post message.');
+      notifyError(error.message || 'Failed to post message.');
     } finally {
       setSending(false);
     }

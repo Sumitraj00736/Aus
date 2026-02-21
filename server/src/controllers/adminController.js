@@ -2,6 +2,7 @@ import SiteSettings from '../models/SiteSettings.js';
 import PageContent from '../models/PageContent.js';
 import Service from '../models/Service.js';
 import BlogPost from '../models/BlogPost.js';
+import AdminUser from '../models/AdminUser.js';
 import ContactSubmission from '../models/ContactSubmission.js';
 import Booking from '../models/Booking.js';
 import Notification from '../models/Notification.js';
@@ -9,7 +10,9 @@ import BlogMessage from '../models/BlogMessage.js';
 import { emitAdminBlogMessage, emitPublicBlogMessage } from '../config/socket.js';
 import HowItWorksCard from '../models/HowItWorksCard.js';
 import FaqItem from '../models/FaqItem.js';
+import AuditLog from '../models/AuditLog.js';
 import crypto from 'node:crypto';
+import bcrypt from 'bcryptjs';
 
 const slugify = (value = '') =>
   String(value)
@@ -29,6 +32,22 @@ const toArray = (value) => {
   return [];
 };
 
+const safeRole = (value) => (value === 'main_admin' ? 'main_admin' : 'sub_admin');
+
+const logAudit = async (req, action, entity, entityId = '', details = {}) => {
+  if (!req?.user?._id) return;
+  await AuditLog.create({
+    adminId: req.user._id,
+    adminName: req.user.name,
+    adminEmail: req.user.email,
+    adminRole: safeRole(req.user.role),
+    action,
+    entity,
+    entityId: entityId ? String(entityId) : '',
+    details,
+  });
+};
+
 const asyncHandler = (fn) => async (req, res) => {
   try {
     await fn(req, res);
@@ -46,7 +65,7 @@ const asyncHandler = (fn) => async (req, res) => {
 };
 
 export const getDashboardStats = asyncHandler(async (_req, res) => {
-  const [contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, notifications, unreadNotifications] = await Promise.all([
+  const [contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, adminUsers, auditLogs, notifications, unreadNotifications] = await Promise.all([
     ContactSubmission.countDocuments(),
     Booking.countDocuments(),
     BlogPost.countDocuments(),
@@ -54,6 +73,8 @@ export const getDashboardStats = asyncHandler(async (_req, res) => {
     Service.countDocuments(),
     HowItWorksCard.countDocuments(),
     FaqItem.countDocuments(),
+    AdminUser.countDocuments(),
+    AuditLog.countDocuments(),
     Notification.countDocuments(),
     Notification.countDocuments({ isRead: false }),
   ]);
@@ -62,7 +83,7 @@ export const getDashboardStats = asyncHandler(async (_req, res) => {
   const latestBookings = await Booking.find().sort({ createdAt: -1 }).limit(5).lean();
 
   res.json({
-    totals: { contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, notifications, unreadNotifications },
+    totals: { contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, adminUsers, auditLogs, notifications, unreadNotifications },
     latestContacts,
     latestBookings,
   });
@@ -93,6 +114,9 @@ export const updateAdminSettings = asyncHandler(async (req, res) => {
     new: true,
     upsert: true,
   }).lean();
+  await logAudit(req, 'update', 'site_settings', settings?._id, {
+    changedKeys: Object.keys(req.body || {}),
+  });
   res.json(settings);
 });
 
@@ -106,6 +130,7 @@ export const updatePage = asyncHandler(async (req, res) => {
     new: true,
     upsert: true,
   }).lean();
+  await logAudit(req, 'update', 'page', page?._id, { pageKey: req.params.pageKey });
   res.json(page);
 });
 
@@ -116,18 +141,21 @@ export const listServicesAdmin = asyncHandler(async (_req, res) => {
 
 export const createService = asyncHandler(async (req, res) => {
   const service = await Service.create(req.body);
+  await logAudit(req, 'create', 'service', service?._id, { title: service?.title, slug: service?.slug });
   res.status(201).json(service);
 });
 
 export const updateService = asyncHandler(async (req, res) => {
   const service = await Service.findByIdAndUpdate(req.params.id, req.body, { new: true }).lean();
   if (!service) return res.status(404).json({ message: 'Service not found.' });
+  await logAudit(req, 'update', 'service', service?._id, { title: service?.title, slug: service?.slug });
   res.json(service);
 });
 
 export const deleteService = asyncHandler(async (req, res) => {
   const deleted = await Service.findByIdAndDelete(req.params.id).lean();
   if (!deleted) return res.status(404).json({ message: 'Service not found.' });
+  await logAudit(req, 'delete', 'service', deleted?._id, { title: deleted?.title, slug: deleted?.slug });
   res.json({ success: true });
 });
 
@@ -158,6 +186,7 @@ export const createBlog = asyncHandler(async (req, res) => {
   };
 
   const post = await BlogPost.create(payload);
+  await logAudit(req, 'create', 'blog', post?._id, { title: post?.title, slug: post?.slug });
   res.status(201).json(post);
 });
 
@@ -191,12 +220,14 @@ export const updateBlog = asyncHandler(async (req, res) => {
 
   const post = await BlogPost.findByIdAndUpdate(req.params.id, update, { new: true }).lean();
   if (!post) return res.status(404).json({ message: 'Blog not found.' });
+  await logAudit(req, 'update', 'blog', post?._id, { title: post?.title, slug: post?.slug });
   res.json(post);
 });
 
 export const deleteBlog = asyncHandler(async (req, res) => {
   const deleted = await BlogPost.findByIdAndDelete(req.params.id).lean();
   if (!deleted) return res.status(404).json({ message: 'Blog not found.' });
+  await logAudit(req, 'delete', 'blog', deleted?._id, { title: deleted?.title, slug: deleted?.slug });
   res.json({ success: true });
 });
 
@@ -217,18 +248,21 @@ export const listHowItWorksAdmin = asyncHandler(async (_req, res) => {
 
 export const createHowItWorksAdmin = asyncHandler(async (req, res) => {
   const row = await HowItWorksCard.create(req.body);
+  await logAudit(req, 'create', 'how_it_works', row?._id, { title: row?.title });
   res.status(201).json(row);
 });
 
 export const updateHowItWorksAdmin = asyncHandler(async (req, res) => {
   const row = await HowItWorksCard.findByIdAndUpdate(req.params.id, req.body, { new: true }).lean();
   if (!row) return res.status(404).json({ message: 'How it works card not found.' });
+  await logAudit(req, 'update', 'how_it_works', row?._id, { title: row?.title });
   res.json(row);
 });
 
 export const deleteHowItWorksAdmin = asyncHandler(async (req, res) => {
   const row = await HowItWorksCard.findByIdAndDelete(req.params.id).lean();
   if (!row) return res.status(404).json({ message: 'How it works card not found.' });
+  await logAudit(req, 'delete', 'how_it_works', row?._id, { title: row?.title });
   res.json({ success: true });
 });
 
@@ -241,18 +275,21 @@ export const listFaqsAdmin = asyncHandler(async (req, res) => {
 
 export const createFaqAdmin = asyncHandler(async (req, res) => {
   const row = await FaqItem.create(req.body);
+  await logAudit(req, 'create', 'faq', row?._id, { pageKey: row?.pageKey });
   res.status(201).json(row);
 });
 
 export const updateFaqAdmin = asyncHandler(async (req, res) => {
   const row = await FaqItem.findByIdAndUpdate(req.params.id, req.body, { new: true }).lean();
   if (!row) return res.status(404).json({ message: 'FAQ not found.' });
+  await logAudit(req, 'update', 'faq', row?._id, { pageKey: row?.pageKey });
   res.json(row);
 });
 
 export const deleteFaqAdmin = asyncHandler(async (req, res) => {
   const row = await FaqItem.findByIdAndDelete(req.params.id).lean();
   if (!row) return res.status(404).json({ message: 'FAQ not found.' });
+  await logAudit(req, 'delete', 'faq', row?._id, { pageKey: row?.pageKey });
   res.json({ success: true });
 });
 
@@ -295,6 +332,7 @@ export const updateBlogMessageAdmin = asyncHandler(async (req, res) => {
     .populate('blogPostId', 'title slug')
     .lean();
   if (!row) return res.status(404).json({ message: 'Blog message not found.' });
+  await logAudit(req, 'update', 'blog_message', row?._id, { status: row?.status });
 
   emitAdminBlogMessage({ type: 'blog-message-updated', message: row });
   if (row.blogPostId?.slug) emitPublicBlogMessage(row.blogPostId.slug, { type: 'blog-message-updated', message: row });
@@ -335,8 +373,41 @@ export const replyBlogMessageAdmin = asyncHandler(async (req, res) => {
     blogTitle: parent.blogPostId.title,
   };
 
+  await logAudit(req, 'reply', 'blog_message', payload?._id, { parentMessageId: parent._id, blogSlug: parent.blogPostId.slug });
+
   emitAdminBlogMessage({ type: 'blog-message-reply', message: payload });
   emitPublicBlogMessage(parent.blogPostId.slug, { type: 'blog-message-reply', message: payload });
 
   res.status(201).json(payload);
+});
+
+export const listAdminUsers = asyncHandler(async (_req, res) => {
+  const users = await AdminUser.find().select('_id name email role createdAt updatedAt').sort({ createdAt: -1 }).lean();
+  res.json(users);
+});
+
+export const createSubAdmin = asyncHandler(async (req, res) => {
+  const { name, email, password, role = 'sub_admin' } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'Name, email, and password are required.' });
+  }
+
+  const exists = await AdminUser.exists({ email: String(email).toLowerCase() });
+  if (exists) return res.status(400).json({ message: 'Email already exists.' });
+
+  const passwordHash = await bcrypt.hash(String(password), 12);
+  const user = await AdminUser.create({
+    name: String(name).trim(),
+    email: String(email).toLowerCase().trim(),
+    passwordHash,
+    role: safeRole(role),
+  });
+
+  await logAudit(req, 'create', 'admin_user', user?._id, { name: user?.name, email: user?.email, role: user?.role });
+  res.status(201).json({ _id: user._id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt });
+});
+
+export const listAuditLogs = asyncHandler(async (_req, res) => {
+  const logs = await AuditLog.find().sort({ createdAt: -1 }).limit(300).lean();
+  res.json(logs);
 });

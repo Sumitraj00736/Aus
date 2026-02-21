@@ -19,3 +19,9 @@ export const requireAuth = async (req, res, next) => {
     res.status(401).json({ message: 'Invalid token' });
   }
 };
+
+export const requireMainAdmin = (req, res, next) => {
+  if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+  if (req.user.role !== 'main_admin') return res.status(403).json({ message: 'Only main admin can perform this action.' });
+  next();
+};

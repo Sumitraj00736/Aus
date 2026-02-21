@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import JoinUsSection from '../../components/home/JoinUsSection';
 import Footer from '../../components/layout/Footer';
 import { apiRequest } from '../../lib/api';
+import { notifyError, notifySuccess } from '../../lib/toast';
 
 const BookServicePage: React.FC = () => {
   const [services, setServices] = useState<any[]>([]);
@@ -39,9 +40,9 @@ const BookServicePage: React.FC = () => {
         address: '',
         notes: '',
       });
-      alert('Booking request submitted successfully.');
+      notifySuccess('Booking request submitted successfully.');
     } catch (error: any) {
-      alert(error.message || 'Failed to submit booking.');
+      notifyError(error.message || 'Failed to submit booking.');
     } finally {
       setSubmitting(false);
     }

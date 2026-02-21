@@ -245,7 +245,9 @@ export const ensureDefaults = async () => {
   const user = await AdminUser.findOne({ email: adminEmail });
   if (!user) {
     const passwordHash = await bcrypt.hash(adminPass, 12);
-    await AdminUser.create({ email: adminEmail, passwordHash, name: adminName });
+    await AdminUser.create({ email: adminEmail, passwordHash, name: adminName, role: 'main_admin' });
+  } else if (user.role !== 'main_admin') {
+    await AdminUser.updateOne({ _id: user._id }, { $set: { role: 'main_admin' } });
   }
 
   const settings = await SiteSettings.findOne({ key: 'global' });

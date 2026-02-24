@@ -10,16 +10,19 @@ import WhatClientsSaySection from '../../components/home/WhatClientsSaySection';
 import FaqSection from '../../components/home/FaqSection';
 import FromBlogSection from '../../components/home/FromBlogSection';
 import JoinUsSection from '../../components/home/JoinUsSection';
+import ServicesCard from '../../components/home/ServicesCard';
+import ServicesPage from '../services/ServicesPage';
 
 const HomePage: React.FC = () => {
   return (
     <>
       <HomeHeroSection />
+            <BookServiceSection />
+            <ServicesCard/>
       <WhyChooseUsSection />
       <OurProjectsSection />
       <HowItWorksSection />
-      <BookServiceSection />
-      <PricingSection />
+      {/* <PricingSection /> */}
       <WhatClientsSaySection />
       <FaqSection />
       <FromBlogSection />

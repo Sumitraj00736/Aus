@@ -49,10 +49,12 @@ const App: React.FC = () => {
         <Route path="/" element={<SiteShell />}>
           <Route index element={<HomePage />} />
           <Route path="services" element={<ServicesPage />} />
+          <Route path="our-services" element={<ServicesPage />} />
           <Route path="services/:slug" element={<ServiceDetailPage />} />
           <Route path="book-service" element={<BookServicePage />} />
           <Route path="project" element={<ProjectsPage />} />
-          <Route path="page" element={<PagesPage />} />
+          <Route path="our-work" element={<ProjectsPage />} />
+          <Route path="about-us" element={<PagesPage />} />
           <Route path="blog" element={<BlogPage />} />
           <Route path="blog/:slug" element={<BlogDetailPage />} />
           <Route path="contact" element={<ContactPage />} />

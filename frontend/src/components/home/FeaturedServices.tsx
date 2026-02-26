@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { ArrowRight, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { apiRequest } from '../../lib/api';
+import React, { useEffect, useState, useRef } from "react";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { apiRequest } from "../../lib/api";
 
 type ServiceItem = {
   _id: string;
@@ -13,13 +13,16 @@ type ServiceItem = {
 };
 
 // --- Animated Card Component ---
-const FlipCard: React.FC<{ service: ServiceItem; idx: number }> = ({ service, idx }) => {
+const FlipCard: React.FC<{ service: ServiceItem; idx: number }> = ({
+  service,
+  idx,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   // Track scroll progress relative to the viewport
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "start start"]
+    offset: ["start end", "start start"],
   });
 
   // rotation: starts tilted back (60deg) and flattens (0deg)
@@ -30,32 +33,32 @@ const FlipCard: React.FC<{ service: ServiceItem; idx: number }> = ({ service, id
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <div ref={containerRef} className="relative h-screen flex items-center justify-center sticky top-0">
+    <div
+      ref={containerRef}
+      className="relative h-screen flex items-center justify-center sticky top-0"
+    >
       <motion.div
-        style={{ 
-          rotateX, 
-          opacity, 
+        style={{
+          rotateX,
+          opacity,
           scale,
-          perspective: "1500px", 
-          transformOrigin: "top center" 
+          perspective: "1500px",
+          transformOrigin: "top center",
         }}
         className="w-full"
       >
-        <article 
+        <article
           className={`flex flex-col md:flex-row bg-white rounded-[50px] overflow-hidden min-h-[500px] group shadow-[0_20px_50px_rgba(0,0,0,0.3)] ${
-            idx % 2 !== 0 ? 'md:flex-row-reverse' : ''
+            idx % 2 !== 0 ? "md:flex-row-reverse" : ""
           }`}
-          style={{ 
-            // The signature notch for the arrow button
-            clipPath: 'polygon(0% 0%, 100% 0%, 100% 90%, 93% 100%, 0% 100%)' 
-          }}
+ 
         >
           {/* Image Section */}
           <div className="w-full md:w-1/2 overflow-hidden">
-            <img 
-              src={service.cardImage} 
-              alt={service.title} 
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+            <img
+              src={service.cardImage}
+              alt={service.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           </div>
 
@@ -64,9 +67,9 @@ const FlipCard: React.FC<{ service: ServiceItem; idx: number }> = ({ service, id
             <h3 className="text-[42px] lg:text-[64px] font-bold text-[#1f2c3c] leading-[1.1] mb-6">
               {service.title}
             </h3>
-            
-            <div className="w-full h-px bg-gray-100 mb-8" />
-            
+
+            <div className="w-full h-px bg-gray-100 mb-2" />
+
             <p className="text-[#666] text-lg lg:text-xl leading-relaxed mb-10">
               {service.shortDescription}
             </p>
@@ -75,7 +78,7 @@ const FlipCard: React.FC<{ service: ServiceItem; idx: number }> = ({ service, id
             <Link
               to={`/services/${service.slug}`}
               className="absolute bottom-0 right-0 w-20 h-20 bg-white flex items-center justify-center text-[#1f2c3c] group-hover:bg-[#00A859] group-hover:text-white border-t border-l border-gray-50 transition-all duration-300 z-10"
-              style={{ borderRadius: '40px 0 0 0' }}
+              style={{ borderRadius: "40px 0 0 " }}
             >
               <ArrowRight className="w-8 h-8 transition-transform group-hover:translate-x-1" />
             </Link>
@@ -91,13 +94,29 @@ const FeaturedServices: React.FC = () => {
   const [services, setServices] = useState<ServiceItem[]>([]);
 
   useEffect(() => {
-    apiRequest<ServiceItem[]>('/public/services')
+    apiRequest<ServiceItem[]>("/public/services")
       .then((data) => {
         // Fallback data if API is empty to ensure visibility
         if (!data || data.length === 0) {
           setServices([
-            { _id: '1', slug: 'construction', title: 'Construction Cleaning', shortDescription: 'We understand the importance of maintaining a clean and professional environment.', cardImage: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200' },
-            { _id: '2', slug: 'move-in', title: 'Move In Out Cleaning', shortDescription: 'The housekeepers we hired are professionals who take pride in doing excellent work.', cardImage: 'https://images.unsplash.com/photo-1527515637462-cff94edd56f9?w=1200' }
+            {
+              _id: "1",
+              slug: "construction",
+              title: "Construction Cleaning",
+              shortDescription:
+                "We understand the importance of maintaining a clean and professional environment.",
+              cardImage:
+                "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200",
+            },
+            {
+              _id: "2",
+              slug: "move-in",
+              title: "Move In Out Cleaning",
+              shortDescription:
+                "The housekeepers we hired are professionals who take pride in doing excellent work.",
+              cardImage:
+                "https://images.unsplash.com/photo-1527515637462-cff94edd56f9?w=1200",
+            },
           ]);
         } else {
           setServices(data);
@@ -108,26 +127,21 @@ const FeaturedServices: React.FC = () => {
 
   return (
     <div className="bg-[#053d38]">
-      {/* Hero */}
-      {/* <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=2200" className="absolute inset-0 w-full h-full object-cover" alt="Hero" />
-        <div className="absolute inset-0 bg-black/60" />
-        <div className="relative z-20 text-center text-white px-6">
-          <h1 className="text-[54px] md:text-[80px] font-bold leading-tight mb-4">Our Services</h1>
-          <p className="text-[#00A859] font-bold uppercase tracking-widest">Home / Services</p>
-        </div>
-      </section> */}
-
       {/* Stacked Animated Cards */}
       <section className="pb-32 relative">
         <div className="max-w-[1320px] mx-auto px-6">
           <div className="text-center py-20 text-white">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Sparkles className="w-5 h-5 text-[#00A859]" />
-              <p className="text-[#9de5cd] text-[14px] font-bold uppercase tracking-widest">Premium Care</p>
+              <p className="text-[#9de5cd] text-[14px] font-bold uppercase tracking-widest">
+                FEATURED SERVICES
+              </p>
             </div>
-            <h2 className="text-[48px] md:text-[72px] font-bold leading-none">
-              Check <span className="text-[#00A859]">Our Best</span> Solutions
+            <h2 className="text-[28px] md:text-[40px] font-bold leading-none">
+              Our company{" "}
+              <span className="text-[#00A859]">provides professional</span> ,
+              high-quality painting <span className="text-[#00A859]">services tailored</span>  to residential,
+              commercial,<span className="text-[#00A859]"> and industrial</span>  spaces.
             </h2>
           </div>
 
@@ -138,7 +152,6 @@ const FeaturedServices: React.FC = () => {
           </div>
         </div>
       </section>
-
     </div>
   );
 };

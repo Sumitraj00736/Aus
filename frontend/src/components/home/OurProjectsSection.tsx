@@ -67,7 +67,7 @@ const OurProjectsSection: React.FC = () => {
           {projects.map((project) => (
             <SwiperSlide key={project._id}>
               <div className="group relative">
-                <Link to={`/project/${project.slug}`} className="block w-full h-[350px] rounded-[25px] overflow-hidden 
+                <Link to={`/project/${project.slug}`} className="block w-full h-[500px] rounded-[25px] overflow-hidden 
                                 shadow-md transition-all duration-500 
                                 group-hover:shadow-[0_10px_30px_rgba(0,168,89,0.35)] 
                                 border border-transparent 

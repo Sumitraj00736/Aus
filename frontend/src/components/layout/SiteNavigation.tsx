@@ -23,7 +23,7 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({
 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const settings = useSiteSettings();
-  const phone = settings?.contact?.phone;
+  const phone = settings?.contact?.phone || "+61-420-507-576";
 
   const headerStyle = dark ? undefined : { top: `${topOffset}px` };
 
@@ -38,9 +38,8 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({
         <div className="max-w-[1240px] mx-auto px-4 xl:px-6">
           <div className="flex items-center justify-between h-[80px]">
 
-            {/* LEFT SIDE (Logo + Nav Together) */}
+            {/* LEFT SIDE: Logo + Desktop Nav */}
             <div className="flex items-center gap-12">
-
               {/* Logo */}
               <Link to="/" className="flex items-center gap-3">
                 <img
@@ -49,7 +48,7 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({
                   className="h-14 w-auto object-contain"
                 />
                 <div className="flex flex-col">
-                  <span className="text-white text-3xl font-bold leading-none">
+                  <span className="text-white text-2xl font-bold leading-none">
                     RAINBOW
                   </span>
                   <span className="text-white text-[11px] tracking-[0.15em] mt-1 opacity-90">
@@ -58,7 +57,7 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({
                 </div>
               </Link>
 
-              {/* Desktop Nav (Now Left Aligned) */}
+              {/* Desktop Nav */}
               <nav className="hidden xl:flex items-center gap-8">
                 {navItems.map((item) => (
                   <NavLink
@@ -66,27 +65,26 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({
                     to={item.href}
                     end
                     className={({ isActive }) =>
-                      `text-white text-[16px] font-medium tracking-wide transition-colors duration-300
-                       hover:text-[#00A859] ${
-                         isActive ? "text-[#00A859]" : ""
-                       }`
+                      `relative text-white text-[14px] font-medium tracking-wide px-1 py-1 group transition-colors duration-300 ${
+                        isActive ? "font-semibold" : ""
+                      }`
                     }
                   >
                     {item.name}
+                    <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#00A859] group-hover:w-full transition-all duration-300"></span>
                   </NavLink>
                 ))}
               </nav>
-
             </div>
 
-            {/* RIGHT SIDE ACTIONS */}
+            {/* RIGHT SIDE: Call Us + Mobile Hamburger */}
             <div className="flex items-center gap-4">
               <a
                 href={`tel:${phone}`}
                 className="hidden sm:inline-flex items-center gap-2 
                            bg-[#00A859] hover:bg-[#008f4c] 
                            text-white px-6 py-2.5 
-                           rounded-full text-[14px] font-semibold 
+                           rounded-full text-[13px] font-semibold 
                            transition-all duration-300"
               >
                 Call Us Today
@@ -101,13 +99,11 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({
                 <Menu size={28} />
               </button>
             </div>
-
           </div>
         </div>
       </header>
 
       {/* ================= MOBILE DRAWER ================= */}
-
       {/* Overlay */}
       <div
         className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 ${
@@ -118,34 +114,50 @@ const SiteNavigation: React.FC<SiteNavigationProps> = ({
 
       {/* Sliding Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-[280px] bg-[#1a1a1a] z-50
+        className={`fixed top-0 right-0 h-full w-[280px] bg-white z-50
                     transform transition-transform duration-400 ease-in-out
-                    ${mobileOpen ? "translate-x-0" : "translate-x-full"}`}
+                    ${mobileOpen ? "translate-x-0" : "translate-x-full"} flex flex-col justify-between`}
       >
-        <div className="flex justify-between items-center p-6 border-b border-white/10">
-          <span className="text-white text-lg font-semibold">Menu</span>
-          <button onClick={() => setMobileOpen(false)}>
-            <X className="text-white" />
-          </button>
+        <div>
+          <div className="flex justify-between items-center p-6 border-b border-black/10">
+            <span className="text-black text-lg font-semibold">Menu</span>
+            <button onClick={() => setMobileOpen(false)}>
+              <X className="text-[#00A859]" />
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-6 p-6">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `text-black text-lg transition-colors duration-300 hover:text-[#00A859] ${
+                    isActive ? "text-[#00A859]" : ""
+                  }`
+                }
+              >
+                {item.name}
+              </NavLink>
+            ))}
+          </nav>
         </div>
 
-        <nav className="flex flex-col gap-6 p-6">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.href}
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                `text-white text-lg transition-colors duration-300
-                 hover:text-[#00A859] ${
-                   isActive ? "text-[#00A859]" : ""
-                 }`
-              }
-            >
-              {item.name}
-            </NavLink>
-          ))}
-        </nav>
+        {/* Mobile Call Button at bottom */}
+        <div className="p-6 border-t border-black/10">
+          <a
+            href={`tel:${phone}`}
+            className="w-full flex items-center justify-center gap-2 
+                       bg-[#00A859] hover:bg-[#008f4c] 
+                       text-white px-6 py-3 
+                       rounded-full text-[14px] font-semibold 
+                       transition-all duration-300"
+          >
+            Call Us Today
+            <Phone className="w-[16px] h-[16px]" />
+          </a>
+        </div>
       </div>
     </>
   );

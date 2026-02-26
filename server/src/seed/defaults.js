@@ -6,6 +6,8 @@ import Service from '../models/Service.js';
 import BlogPost from '../models/BlogPost.js';
 import HowItWorksCard from '../models/HowItWorksCard.js';
 import FaqItem from '../models/FaqItem.js';
+import Project from '../models/Project.js';
+import Testimonial from '../models/Testimonial.js';
 
 const defaultPages = [
   {
@@ -237,6 +239,63 @@ const defaultBlogs = [
   },
 ];
 
+const defaultProjects = [
+  {
+    slug: 'sparkle-residential-project',
+    title: 'Sparkle Residential Project',
+    category: 'Residential',
+    excerpt: 'Premium residential deep cleaning and maintenance for a modern family home.',
+    coverImage: 'https://images.unsplash.com/photo-1527515637462-cff94edd56f9?w=1400&q=80',
+    completionDate: 'October 30, 2025',
+    clients: 'Themeforest, Evanto',
+    location: 'Main Address, USA',
+    projectCategory: 'Residential',
+    overviewTitle: 'Project Overview',
+    overviewText:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod quam nec nibh pharetra vehicula ut eu ante. In in molestie purus. Fusce feugiat vehicula nunc.',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1100&q=80',
+      'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=1100&q=80',
+    ],
+    benefitsTitle: 'Project Benefits',
+    benefitsText:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod quam nec nibh pharetra vehicula ut eu ante.',
+    benefitPoints: [
+      'The housekeepers we hired are professionals who take pride in doing excellent work.',
+      'Your time is precious, and we understand that cleaning is really one more item on your to-do list.',
+      'We carefully screen all cleaners so you receive the highest quality service.',
+      'Lint roll everything and clean tough surfaces, especially pet-sensitive areas.',
+    ],
+    reviewTitle: 'Customer Reviews',
+    reviewQuote:
+      'Our office has never looked better. The cleaning crew is punctual, thorough, and always goes above and beyond. Highly recommend their services!',
+    reviewAuthor: 'Dishes Cleaning',
+    previousProjectText: 'Solar Panel Cleaning',
+    sortOrder: 1,
+  },
+];
+
+const defaultTestimonials = [
+  {
+    name: 'Dishes Cleaning',
+    role: 'Manager',
+    rating: 5,
+    image: 'https://i.pravatar.cc/150?img=32',
+    quote:
+      "Working with the team has been a real pleasure. It doesn't feel like an offshore operation – the team work as one. It's been comforting to know that when you have your back to the wall, they are standing there beside you.",
+    sortOrder: 1,
+  },
+  {
+    name: 'Office Refresh',
+    role: 'Operations Director',
+    rating: 5,
+    image: 'https://i.pravatar.cc/150?img=44',
+    quote:
+      'The attention to detail is unmatched. They handled our project with extreme professionalism and care. They are a true partner in our maintenance strategy.',
+    sortOrder: 2,
+  },
+];
+
 export const ensureDefaults = async () => {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@cetro.com';
   const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
@@ -271,5 +330,13 @@ export const ensureDefaults = async () => {
 
   for (const faq of defaultFaqs) {
     await FaqItem.updateOne({ pageKey: faq.pageKey, question: faq.question }, { $setOnInsert: faq }, { upsert: true });
+  }
+
+  for (const project of defaultProjects) {
+    await Project.updateOne({ slug: project.slug }, { $setOnInsert: project }, { upsert: true });
+  }
+
+  for (const testimonial of defaultTestimonials) {
+    await Testimonial.updateOne({ name: testimonial.name, role: testimonial.role }, { $setOnInsert: testimonial }, { upsert: true });
   }
 };

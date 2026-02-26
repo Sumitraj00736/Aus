@@ -5,6 +5,8 @@
 
 :root {
   --theme-primary: #00A859;
+  --theme-primary-dark: #008f4c;
+  --theme-primary-darker: #007b41;
   --theme-dark: #1f2c3c;
   --theme-light-bg: #f2f2ee;
   --theme-text: #1a1a1a;
@@ -52,7 +54,7 @@
 }
 
 .hover-theme-bg-primary-dark:hover {
-  background-color: color-mix(in srgb, var(--theme-primary) 82%, black);
+  background-color: var(--theme-primary-dark);
 }
 
 .group:hover .group-hover-theme-primary {
@@ -80,11 +82,70 @@
   border-color: var(--theme-primary) !important;
 }
 
+[class*="group-hover:bg-[#00A859]"] {
+  transition: background-color 0.3s ease;
+}
+
+[class*="group-hover:text-[#00A859]"] {
+  transition: color 0.3s ease;
+}
+
+[class*="group-hover:border-[#00A859]"] {
+  transition: border-color 0.3s ease;
+}
+
+.group:hover [class*="group-hover:bg-[#00A859]"] {
+  background-color: var(--theme-primary) !important;
+}
+
+.group:hover [class*="group-hover:text-[#00A859]"] {
+  color: var(--theme-primary) !important;
+}
+
+.group:hover [class*="group-hover:border-[#00A859]"] {
+  border-color: var(--theme-primary) !important;
+}
+
 [class*="hover:bg-[#00A859]"]:hover,
 [class*="hover:bg-[#008f4c]"]:hover,
 [class*="hover:bg-[#00914d]"]:hover,
 [class*="hover:bg-[#009551]"]:hover {
-  background-color: color-mix(in srgb, var(--theme-primary) 82%, black) !important;
+  background-color: var(--theme-primary-dark) !important;
+}
+
+[class*="bg-[#008f4c]"],
+[class*="bg-[#00914d]"],
+[class*="bg-[#009551]"] {
+  background-color: var(--theme-primary-dark) !important;
+}
+
+[class*="text-[#008f4c]"],
+[class*="text-[#00914d]"],
+[class*="text-[#009551]"] {
+  color: var(--theme-primary-dark) !important;
+}
+
+[class*="ring-[#00A859]"],
+[class*="focus:ring-[#00A859]"]:focus {
+  --tw-ring-color: var(--theme-primary) !important;
+}
+
+[class*="fill-[#00A859]"] {
+  fill: var(--theme-primary) !important;
+}
+
+[class*="stroke-[#00A859]"] {
+  stroke: var(--theme-primary) !important;
+}
+
+[class*="from-[#00A859]"] {
+  --tw-gradient-from: var(--theme-primary) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(0 168 89 / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+[class*="to-[#00A859]"] {
+  --tw-gradient-to: var(--theme-primary) var(--tw-gradient-to-position) !important;
 }
 
 [class*="hover:text-[#00A859]"]:hover {

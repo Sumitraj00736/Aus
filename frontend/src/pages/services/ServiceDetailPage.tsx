@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Check, Minus, Plus } from 'lucide-react';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import JoinUsSection from '../../components/home/JoinUsSection';
-import Footer from '../../components/layout/Footer';
 import { apiRequest } from '../../lib/api';
 
 const ServiceDetailPage: React.FC = () => {
@@ -135,8 +133,6 @@ const ServiceDetailPage: React.FC = () => {
         </div>
       </section>
 
-      <JoinUsSection />
-      <Footer />
     </>
   );
 };

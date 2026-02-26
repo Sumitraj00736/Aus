@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { CalendarDays, Search, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import Footer from '../../components/layout/Footer';
-import JoinUsSection from '../../components/home/JoinUsSection';
 import { API_BASE, apiRequest } from '../../lib/api';
 import { notifyError, notifySuccess } from '../../lib/toast';
 
@@ -299,8 +297,6 @@ const BlogDetailPage: React.FC = () => {
         </div>
       </section>
 
-      <JoinUsSection />
-      <Footer />
     </>
   );
 };

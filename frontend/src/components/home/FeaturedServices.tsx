@@ -87,7 +87,7 @@ const FlipCard: React.FC<{ service: ServiceItem; idx: number }> = ({ service, id
 };
 
 // --- Main Page Component ---
-const ServicesPage: React.FC = () => {
+const FeaturedServices: React.FC = () => {
   const [services, setServices] = useState<ServiceItem[]>([]);
 
   useEffect(() => {
@@ -109,14 +109,14 @@ const ServicesPage: React.FC = () => {
   return (
     <div className="bg-[#053d38]">
       {/* Hero */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+      {/* <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=2200" className="absolute inset-0 w-full h-full object-cover" alt="Hero" />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-20 text-center text-white px-6">
           <h1 className="text-[54px] md:text-[80px] font-bold leading-tight mb-4">Our Services</h1>
           <p className="text-[#00A859] font-bold uppercase tracking-widest">Home / Services</p>
         </div>
-      </section>
+      </section> */}
 
       {/* Stacked Animated Cards */}
       <section className="pb-32 relative">
@@ -143,4 +143,4 @@ const ServicesPage: React.FC = () => {
   );
 };
 
-export default ServicesPage;
+export default FeaturedServices;

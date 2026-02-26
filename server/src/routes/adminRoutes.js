@@ -29,6 +29,14 @@ import {
   createFaqAdmin,
   updateFaqAdmin,
   deleteFaqAdmin,
+  listProjectsAdmin,
+  createProjectAdmin,
+  updateProjectAdmin,
+  deleteProjectAdmin,
+  listTestimonialsAdmin,
+  createTestimonialAdmin,
+  updateTestimonialAdmin,
+  deleteTestimonialAdmin,
   getCloudinarySignature,
   listAdminUsers,
   createSubAdmin,
@@ -72,6 +80,14 @@ router.get('/faqs', listFaqsAdmin);
 router.post('/faqs', createFaqAdmin);
 router.put('/faqs/:id', updateFaqAdmin);
 router.delete('/faqs/:id', deleteFaqAdmin);
+router.get('/projects', listProjectsAdmin);
+router.post('/projects', createProjectAdmin);
+router.put('/projects/:id', updateProjectAdmin);
+router.delete('/projects/:id', deleteProjectAdmin);
+router.get('/testimonials', listTestimonialsAdmin);
+router.post('/testimonials', createTestimonialAdmin);
+router.put('/testimonials/:id', updateTestimonialAdmin);
+router.delete('/testimonials/:id', deleteTestimonialAdmin);
 router.get('/uploads/cloudinary-signature', getCloudinarySignature);
 router.get('/admins', requireMainAdmin, listAdminUsers);
 router.post('/admins', requireMainAdmin, createSubAdmin);

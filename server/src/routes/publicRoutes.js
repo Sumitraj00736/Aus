@@ -9,6 +9,9 @@ import {
   getBlogMessagesBySlug,
   getHowItWorksCards,
   getFaqs,
+  getProjects,
+  getProjectBySlug,
+  getTestimonials,
 } from '../controllers/publicController.js';
 
 const router = Router();
@@ -22,5 +25,8 @@ router.get('/blogs/:slug', getBlogBySlug);
 router.get('/blogs/:slug/messages', getBlogMessagesBySlug);
 router.get('/how-it-works', getHowItWorksCards);
 router.get('/faqs', getFaqs);
+router.get('/projects', getProjects);
+router.get('/projects/:slug', getProjectBySlug);
+router.get('/testimonials', getTestimonials);
 
 export default router;

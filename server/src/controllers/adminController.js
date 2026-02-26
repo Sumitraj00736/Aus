@@ -11,6 +11,8 @@ import { emitAdminBlogMessage, emitPublicBlogMessage } from '../config/socket.js
 import HowItWorksCard from '../models/HowItWorksCard.js';
 import FaqItem from '../models/FaqItem.js';
 import AuditLog from '../models/AuditLog.js';
+import Project from '../models/Project.js';
+import Testimonial from '../models/Testimonial.js';
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 
@@ -65,7 +67,7 @@ const asyncHandler = (fn) => async (req, res) => {
 };
 
 export const getDashboardStats = asyncHandler(async (_req, res) => {
-  const [contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, adminUsers, auditLogs, notifications, unreadNotifications] = await Promise.all([
+  const [contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, projects, testimonials, adminUsers, auditLogs, notifications, unreadNotifications] = await Promise.all([
     ContactSubmission.countDocuments(),
     Booking.countDocuments(),
     BlogPost.countDocuments(),
@@ -73,6 +75,8 @@ export const getDashboardStats = asyncHandler(async (_req, res) => {
     Service.countDocuments(),
     HowItWorksCard.countDocuments(),
     FaqItem.countDocuments(),
+    Project.countDocuments(),
+    Testimonial.countDocuments(),
     AdminUser.countDocuments(),
     AuditLog.countDocuments(),
     Notification.countDocuments(),
@@ -83,7 +87,7 @@ export const getDashboardStats = asyncHandler(async (_req, res) => {
   const latestBookings = await Booking.find().sort({ createdAt: -1 }).limit(5).lean();
 
   res.json({
-    totals: { contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, adminUsers, auditLogs, notifications, unreadNotifications },
+    totals: { contacts, bookings, blogs, blogMessages, services, howItWorks, faqs, projects, testimonials, adminUsers, auditLogs, notifications, unreadNotifications },
     latestContacts,
     latestBookings,
   });
@@ -290,6 +294,94 @@ export const deleteFaqAdmin = asyncHandler(async (req, res) => {
   const row = await FaqItem.findByIdAndDelete(req.params.id).lean();
   if (!row) return res.status(404).json({ message: 'FAQ not found.' });
   await logAudit(req, 'delete', 'faq', row?._id, { pageKey: row?.pageKey });
+  res.json({ success: true });
+});
+
+export const listProjectsAdmin = asyncHandler(async (_req, res) => {
+  const rows = await Project.find().sort({ sortOrder: 1, createdAt: -1 }).lean();
+  res.json(rows);
+});
+
+export const createProjectAdmin = asyncHandler(async (req, res) => {
+  const title = String(req.body?.title || '').trim();
+  const requestedSlug = String(req.body?.slug || '').trim();
+  if (!title) return res.status(400).json({ message: 'Project title is required.' });
+
+  const slug = slugify(requestedSlug || title);
+  if (!slug) return res.status(400).json({ message: 'Valid slug or title is required.' });
+
+  const collision = await Project.exists({ slug });
+  if (collision) return res.status(400).json({ message: 'Slug already exists. Use a different slug.' });
+
+  const row = await Project.create({
+    ...req.body,
+    title,
+    slug,
+    galleryImages: toArray(req.body?.galleryImages),
+    benefitPoints: toArray(req.body?.benefitPoints),
+    sortOrder: Number(req.body?.sortOrder || 0),
+  });
+  await logAudit(req, 'create', 'project', row?._id, { title: row?.title, slug: row?.slug });
+  res.status(201).json(row);
+});
+
+export const updateProjectAdmin = asyncHandler(async (req, res) => {
+  const update = { ...req.body };
+  const title = Object.prototype.hasOwnProperty.call(req.body, 'title') ? String(req.body.title || '').trim() : undefined;
+  const requestedSlug = Object.prototype.hasOwnProperty.call(req.body, 'slug') ? String(req.body.slug || '').trim() : undefined;
+
+  if (title !== undefined) {
+    if (!title) return res.status(400).json({ message: 'Project title cannot be empty.' });
+    update.title = title;
+  }
+
+  if (requestedSlug !== undefined || title !== undefined) {
+    const slug = slugify(requestedSlug || title || '');
+    if (!slug) return res.status(400).json({ message: 'Valid slug is required.' });
+    const collision = await Project.exists({ _id: { $ne: req.params.id }, slug });
+    if (collision) return res.status(400).json({ message: 'Slug already exists. Use a different slug.' });
+    update.slug = slug;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(req.body, 'galleryImages')) update.galleryImages = toArray(req.body.galleryImages);
+  if (Object.prototype.hasOwnProperty.call(req.body, 'benefitPoints')) update.benefitPoints = toArray(req.body.benefitPoints);
+  if (Object.prototype.hasOwnProperty.call(req.body, 'sortOrder')) update.sortOrder = Number(req.body.sortOrder || 0);
+
+  const row = await Project.findByIdAndUpdate(req.params.id, update, { new: true }).lean();
+  if (!row) return res.status(404).json({ message: 'Project not found.' });
+  await logAudit(req, 'update', 'project', row?._id, { title: row?.title, slug: row?.slug });
+  res.json(row);
+});
+
+export const deleteProjectAdmin = asyncHandler(async (req, res) => {
+  const row = await Project.findByIdAndDelete(req.params.id).lean();
+  if (!row) return res.status(404).json({ message: 'Project not found.' });
+  await logAudit(req, 'delete', 'project', row?._id, { title: row?.title, slug: row?.slug });
+  res.json({ success: true });
+});
+
+export const listTestimonialsAdmin = asyncHandler(async (_req, res) => {
+  const rows = await Testimonial.find().sort({ sortOrder: 1, createdAt: -1 }).lean();
+  res.json(rows);
+});
+
+export const createTestimonialAdmin = asyncHandler(async (req, res) => {
+  const row = await Testimonial.create(req.body);
+  await logAudit(req, 'create', 'testimonial', row?._id, { name: row?.name });
+  res.status(201).json(row);
+});
+
+export const updateTestimonialAdmin = asyncHandler(async (req, res) => {
+  const row = await Testimonial.findByIdAndUpdate(req.params.id, req.body, { new: true }).lean();
+  if (!row) return res.status(404).json({ message: 'Testimonial not found.' });
+  await logAudit(req, 'update', 'testimonial', row?._id, { name: row?.name });
+  res.json(row);
+});
+
+export const deleteTestimonialAdmin = asyncHandler(async (req, res) => {
+  const row = await Testimonial.findByIdAndDelete(req.params.id).lean();
+  if (!row) return res.status(404).json({ message: 'Testimonial not found.' });
+  await logAudit(req, 'delete', 'testimonial', row?._id, { name: row?.name });
   res.json({ success: true });
 });
 

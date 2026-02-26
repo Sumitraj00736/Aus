@@ -5,6 +5,8 @@ import BlogPost from '../models/BlogPost.js';
 import BlogMessage from '../models/BlogMessage.js';
 import HowItWorksCard from '../models/HowItWorksCard.js';
 import FaqItem from '../models/FaqItem.js';
+import Project from '../models/Project.js';
+import Testimonial from '../models/Testimonial.js';
 
 export const getSettings = async (_req, res) => {
   const settings = await SiteSettings.findOne({ key: 'global' }).lean();
@@ -78,5 +80,21 @@ export const getHowItWorksCards = async (_req, res) => {
 export const getFaqs = async (req, res) => {
   const pageKey = req.query.pageKey ? String(req.query.pageKey) : 'home';
   const rows = await FaqItem.find({ pageKey, isPublished: true }).sort({ sortOrder: 1, createdAt: 1 }).lean();
+  res.json(rows);
+};
+
+export const getProjects = async (_req, res) => {
+  const rows = await Project.find({ isPublished: true }).sort({ sortOrder: 1, createdAt: -1 }).lean();
+  res.json(rows);
+};
+
+export const getProjectBySlug = async (req, res) => {
+  const row = await Project.findOne({ slug: req.params.slug, isPublished: true }).lean();
+  if (!row) return res.status(404).json({ message: 'Project not found.' });
+  res.json(row);
+};
+
+export const getTestimonials = async (_req, res) => {
+  const rows = await Testimonial.find({ isPublished: true }).sort({ sortOrder: 1, createdAt: -1 }).lean();
   res.json(rows);
 };

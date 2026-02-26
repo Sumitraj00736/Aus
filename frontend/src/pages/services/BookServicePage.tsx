@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import JoinUsSection from '../../components/home/JoinUsSection';
-import Footer from '../../components/layout/Footer';
 import { apiRequest } from '../../lib/api';
 import { notifyError, notifySuccess } from '../../lib/toast';
 
@@ -106,8 +104,6 @@ const BookServicePage: React.FC = () => {
         </div>
       </section>
 
-      <JoinUsSection />
-      <Footer />
     </>
   );
 };

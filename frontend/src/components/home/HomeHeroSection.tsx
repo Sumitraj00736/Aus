@@ -76,10 +76,10 @@ const HomeHeroSection: React.FC = () => {
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_520px] gap-10 items-center">
           {/* Left Hero Text */}
           <div className="max-w-[900px]">
-            <h1 className="text-white text-[48px] sm:text-[60px] md:text-[80px] lg:text-[96px] font-extrabold leading-[1.05] tracking-[-0.02em] mb-6">
+            <h1 className="text-white text-[48px] sm:text-[60px] md:text-[70px] lg:text-[80px] font-extrabold leading-[1.05] tracking-[-0.02em] mb-6">
               Transform <span className="text-[#00A859]">Your </span>
               <br />
-              Space<span className="text-[#00A859]">Today </span>
+             <span className="text-[#00A859]"> Space </span> Today
             </h1>
 
             <p className="text-[16px] sm:text-[18px] md:text-[20px] text-white/90 max-w-[750px] leading-relaxed mb-8">

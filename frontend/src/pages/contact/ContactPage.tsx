@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowRight, CalendarClock, Mail, MapPin, PhoneCall } from 'lucide-react';
 import PageHero from '../../components/common/PageHero';
-import Footer from '../../components/layout/Footer';
-import JoinUsSection from '../../components/home/JoinUsSection';
 import { apiRequest } from '../../lib/api';
 
 const contactCards = [
@@ -78,8 +76,6 @@ const ContactPage: React.FC = () => {
         </div>
       </section>
 
-      <JoinUsSection />
-      <Footer />
     </>
   );
 };

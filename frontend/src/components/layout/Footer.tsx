@@ -19,10 +19,10 @@ const Footer: React.FC = () => {
       <div className="max-w-[1240px] mx-auto px-4 xl:px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
           <Link to="/" className="inline-block mb-5" aria-label="Cetro Home">
-            <svg width="130" height="44" viewBox="0 0 130 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14 9C11.6 9 9.4 9.7 7.5 11C8.2 8 10.1 5.4 13 3.9C9.7 4.5 7.1 6.7 5.8 9.6C4.5 6.7 1.9 4.5 -1.4 3.9C1.5 5.4 3.4 8 4.1 11C2.2 9.7 0 9 -2.4 9V10.8C0.8 10.8 3.6 13 4.7 16.1C5.1 17 5.3 17.9 5.3 18.8C5.3 17.9 5.5 17 5.9 16.1C7 13 9.8 10.8 13 10.8C13.3 10.8 13.7 10.8 13.7 10.8V9C13.7 9 13.4 9 14 9Z" fill="#00A859" transform="translate(4, 6)" />
+            <svg width="130" height="44" viewBox="0 0 130 44" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[var(--theme-primary)]">
+              <path d="M14 9C11.6 9 9.4 9.7 7.5 11C8.2 8 10.1 5.4 13 3.9C9.7 4.5 7.1 6.7 5.8 9.6C4.5 6.7 1.9 4.5 -1.4 3.9C1.5 5.4 3.4 8 4.1 11C2.2 9.7 0 9 -2.4 9V10.8C0.8 10.8 3.6 13 4.7 16.1C5.1 17 5.3 17.9 5.3 18.8C5.3 17.9 5.5 17 5.9 16.1C7 13 9.8 10.8 13 10.8C13.3 10.8 13.7 10.8 13.7 10.8V9C13.7 9 13.4 9 14 9Z" fill="currentColor" transform="translate(4, 6)" />
               <text x="22" y="33" fill="white" fontSize="32" fontWeight="800" fontFamily="Jost, sans-serif" letterSpacing="-0.8">{siteName.toLowerCase()}</text>
-              <circle cx="94" cy="29" r="3" fill="#00A859" />
+              <circle cx="94" cy="29" r="3" fill="currentColor" />
             </svg>
           </Link>
           <p className="text-white/70 leading-relaxed max-w-[280px]">

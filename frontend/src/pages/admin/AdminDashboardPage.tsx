@@ -30,8 +30,8 @@ type TabKey =
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'overview', label: 'Overview' },
-  { key: 'settings', label: 'Theme & Site' },
-  { key: 'pages', label: 'Pages' },
+  // { key: 'settings', label: 'Theme & Site' },
+  // { key: 'pages', label: 'Pages' },
   { key: 'services', label: 'Services' },
   { key: 'blogs', label: 'Blogs' },
   { key: 'projects', label: 'Projects' },
@@ -42,8 +42,8 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: 'contacts', label: 'Contacts' },
   { key: 'bookings', label: 'Bookings' },
   { key: 'notifications', label: 'Notifications' },
-  { key: 'admins', label: 'Sub Admins' },
-  { key: 'activity', label: 'Activity Logs' },
+  // { key: 'admins', label: 'Sub Admins' },
+  // { key: 'activity', label: 'Activity Logs' },
 ];
 
 type ToastItem = {

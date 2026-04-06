@@ -62,15 +62,23 @@ const HomeHeroSection: React.FC = () => {
   return (
     <section className="relative w-full min-h-screen flex items-center overflow-hidden bg-[#1a1a1a]">
       {/* Background */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=2400&q=80"
-          alt="Cleaning professionals"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-black/60" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_25%,rgba(0,168,89,0.22),transparent_38%)]" />
-      </div>
+<div className="absolute inset-0 z-0">
+  <img
+    src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=2400&q=80"
+    alt="Cleaning professionals"
+    className="w-full h-full object-cover object-center
+               sm:object-[center_30%] sm:h-full"
+  />
+  {/* Mobile Horizontal Banner */}
+  <img
+    src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200&q=60"
+    alt="Cleaning professionals"
+    className="block sm:hidden w-full h-[220px] object-cover object-center"
+  />
+
+  <div className="absolute inset-0 bg-black/60" />
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_25%,rgba(0,168,89,0.22),transparent_38%)]" />
+</div>
 
       <div className="relative z-20 max-w-[1240px] mx-auto px-4 xl:px-6 pt-[160px] pb-[100px] w-full">
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_520px] gap-10 items-center">

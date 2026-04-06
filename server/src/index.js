@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
 
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN?.split(',') || ['http://localhost:3000', 'https://janakisolutions.netlify.app'],
+    origin: process.env.CLIENT_ORIGIN?.split(',') || ['https://janakisolutions.netlify.app','http://localhost:3000'],
     credentials: true,
   })
 );
